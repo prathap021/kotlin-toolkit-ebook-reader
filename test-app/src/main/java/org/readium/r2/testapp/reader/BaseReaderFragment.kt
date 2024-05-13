@@ -5,6 +5,7 @@
  */
 
 package org.readium.r2.testapp.reader
+import android.net.Uri
 
 import android.os.Bundle
 import android.view.Menu
@@ -25,6 +26,12 @@ import org.readium.r2.shared.publication.Publication
 import org.readium.r2.testapp.R
 import org.readium.r2.testapp.reader.preferences.MainPreferencesBottomSheetDialogFragment
 import org.readium.r2.testapp.utils.UserError
+import org.readium.r2.testapp.utils.launchWebBrowser
+import android.app.AlertDialog
+import android.content.Context
+
+//import android.app.AlertDialog
+
 
 /*
  * Base reader fragment class
@@ -33,6 +40,10 @@ import org.readium.r2.testapp.utils.UserError
  */
 @OptIn(ExperimentalReadiumApi::class)
 abstract class BaseReaderFragment : Fragment() {
+
+    var buyUrl : String = "https://www.amazon.in/s?k=metropolis"
+
+
 
     val model: ReaderViewModel by activityViewModels()
     protected val publication: Publication get() = model.publication
@@ -87,6 +98,25 @@ abstract class BaseReaderFragment : Fragment() {
                             model.insertBookmark(navigator.currentLocator.value)
                             return true
                         }
+                        // prathap added buy button 13-03-2024
+                        R.id.purchase -> {
+                            val context: Context = requireContext()
+
+                            context?.let { value-> launchWebBrowser(context,Uri.parse(buyUrl)) }
+                            return true
+                        }
+                        R.id.chatAi -> {
+                        // chat api working block
+
+                            return true
+                        }
+                        R.id.infoBook -> {
+                            println("book details is --> "+ model.publication
+                            +model.readerInitData)
+                            val context: Context = requireContext()
+                            showAlert(context,"book info","")
+                            return true
+                        }
                         R.id.settings -> {
                             MainPreferencesBottomSheetDialogFragment()
                                 .show(childFragmentManager, "Settings")
@@ -104,6 +134,27 @@ abstract class BaseReaderFragment : Fragment() {
             },
             viewLifecycleOwner
         )
+    }
+
+
+    fun showAlert(context: Context, title: String, message: String) {
+        // Create a builder for the alert dialog
+        val builder = AlertDialog.Builder(context)
+
+        // Set the dialog title and message
+        builder.setTitle(title)
+            .setMessage(message)
+
+        // Set a button for the positive action (e.g., OK)
+        builder.setPositiveButton("OK") { dialog, which ->
+            // Do something when the positive button is clicked
+            // For example, dismiss the dialog
+            dialog.dismiss()
+        }
+
+        // Create and show the alert dialog
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

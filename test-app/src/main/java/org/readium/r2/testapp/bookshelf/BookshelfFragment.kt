@@ -76,6 +76,10 @@ class BookshelfFragment : Fragment() {
         bookshelfAdapter = BookshelfAdapter(
             onBookClick = { book ->
                 book.id?.let {
+                   println("book details is " + book.id +
+                   "=="+ book.title + "=="
+                   +book.author)
+
                     bookshelfViewModel.openPublication(it)
                 }
             },

@@ -68,6 +68,7 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.legacy.v4)
 
@@ -116,9 +117,12 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
+
     // Tests
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.ext.junit)
     androidTestImplementation(libs.androidx.expresso.core)
+
+
 }

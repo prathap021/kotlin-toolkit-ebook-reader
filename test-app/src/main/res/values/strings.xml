@@ -11,6 +11,9 @@
     <string name="epubactivity_book_nav_options">Book navigation menu</string>
     <string name="epubactivity_read_aloud_start">Read Aloud</string>
     <string name="epubactivity_search">Search</string>
+    <string name="epubactivity_purchase">Purchase</string>
+    <string name="epubactivity_chat">Chat with us</string>
+    <string name="epubactivity_infoBook">book details</string>
 
     <string name="title_fragment_drm_management">DRM Management</string>
     <string name="more_options">More Options</string>

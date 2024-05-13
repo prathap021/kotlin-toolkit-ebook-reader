@@ -5,6 +5,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context='org.readium.r2.testapp.reader.BaseReaderFragment'>
 
+
+
+
+
+
+
+
+
+
+
+
+    <item
+        android:id="@+id/purchase"
+        android:icon="@drawable/purchase"
+        android:title="@string/epubactivity_purchase"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"/>
+
+    <item
+        android:id="@+id/chatAi"
+        android:icon="@drawable/chatbot"
+        android:title="@string/epubactivity_chat"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"/>
+
+    <item
+        android:id="@+id/infoBook"
+        android:icon="@drawable/guidebook"
+        android:title="@string/epubactivity_infoBook"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"/>
+
+
     <item
         android:id="@+id/search"
         android:icon="@drawable/ic_baseline_search_24"
