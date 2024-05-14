@@ -27,6 +27,9 @@ android {
         ndk.abiFilters.add("arm64-v8a")
         ndk.abiFilters.add("x86")
         ndk.abiFilters.add("x86_64")
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -34,7 +37,7 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
     }
     composeOptions {
@@ -52,6 +55,9 @@ android {
         }
     }
     packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
         resources.excludes.add("META-INF/*")
     }
 
@@ -84,6 +90,24 @@ dependencies {
     implementation(project(":readium:readium-lcp"))
     // Only required if you want to support PDF files using PDFium.
     implementation(project(":readium:adapters:pdfium"))
+
+
+    implementation( "com.squareup.retrofit2:retrofit:2.9.0")
+    implementation( "com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+
+// Retrofit with Kotlin serialization Converter
+
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    // Kotlin serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+
+
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)

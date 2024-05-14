@@ -29,6 +29,8 @@ import org.readium.r2.testapp.utils.UserError
 import org.readium.r2.testapp.utils.launchWebBrowser
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import org.readium.r2.testapp.chat.ChatActivity
 
 //import android.app.AlertDialog
 
@@ -107,7 +109,9 @@ abstract class BaseReaderFragment : Fragment() {
                         }
                         R.id.chatAi -> {
                         // chat api working block
-
+                            context?.startActivity(
+                                Intent(context, ChatActivity::class.java)
+                            )
                             return true
                         }
                         R.id.infoBook -> {

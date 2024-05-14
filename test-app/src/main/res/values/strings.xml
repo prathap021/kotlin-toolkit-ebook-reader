@@ -212,4 +212,5 @@
 
 
     <string name="error_unexpected">An unexpected error occurred.</string>
+    <string name="title_activity_chat">ChatActivity</string>
 </resources>
