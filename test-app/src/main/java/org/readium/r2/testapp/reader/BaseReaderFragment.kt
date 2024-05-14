@@ -114,13 +114,13 @@ abstract class BaseReaderFragment : Fragment() {
                             )
                             return true
                         }
-                        R.id.infoBook -> {
-                            println("book details is --> "+ model.publication
-                            +model.readerInitData)
-                            val context: Context = requireContext()
-                            showAlert(context,"book info","")
-                            return true
-                        }
+//                        R.id.infoBook -> {
+//                            println("book details is --> "+ model.publication
+//                            +model.readerInitData)
+//                            val context: Context = requireContext()
+//                            showAlert(context,"book info","")
+//                            return true
+//                        }
                         R.id.settings -> {
                             MainPreferencesBottomSheetDialogFragment()
                                 .show(childFragmentManager, "Settings")
