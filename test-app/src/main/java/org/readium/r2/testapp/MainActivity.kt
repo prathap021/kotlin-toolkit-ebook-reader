@@ -9,6 +9,7 @@ package org.readium.r2.testapp
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -16,6 +17,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+//import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material.MaterialTheme
+import org.readium.r2.testapp.auth.LoginScreen
+import androidx.compose.runtime.Composable
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +51,17 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         viewModel.channel.receive(this) { handleEvent(it) }
+//        setContent {
+//            MaterialTheme {
+//                LoginScreen(onLoginClicked = { username, password ->
+//
+//
+//
+//                })
+//
+//            }
+//        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
