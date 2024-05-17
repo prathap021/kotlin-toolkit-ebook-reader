@@ -32,7 +32,15 @@
             />
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_chat"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize"
+            />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

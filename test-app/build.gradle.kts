@@ -141,6 +141,10 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+//    implementation
+
 
     // Tests
     testImplementation(libs.junit)

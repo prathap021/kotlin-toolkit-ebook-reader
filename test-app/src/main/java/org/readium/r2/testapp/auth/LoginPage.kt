@@ -1,4 +1,5 @@
 package org.readium.r2.testapp.auth
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.material.*
@@ -20,12 +21,77 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 import androidx.compose.ui.unit.sp
+import androidx.activity.ComponentActivity
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.compose.ui.platform.LocalContext
+import org.readium.r2.testapp.MainActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import org.readium.r2.testapp.utils.SpHelper
 
+
+class LoginActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+//            val isFishTasty: false /*MutableState<Boolean> =  IsUserLoginOrNot()*/
+//            if(isFishTasty){
+//                val intent = Intent(this, MainActivity::class.java)
+//                this.startActivity(intent)
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            }else{
+//
+//            }
+            MaterialTheme {
+                LoginScreen ()
+
+//                Scaffold(
+//                    topBar = { },
+//                    content = { it
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding(16.dp),
+//                            horizontalAlignment = Alignment.CenterHorizontally
+//
+//
+//                        ){
+//
+//
+//                        }
+//                    })
+            }
+
+
+        }
+
+
+    }
+
+
+}
 
 
 
 @Composable
-fun LoginScreen(onLoginClicked: (String, String) -> Unit) {
+fun MainScreen() {
+    val context = LocalContext.current
+    Button(
+        onClick = {
+            val intent = Intent(context, MainActivity::class.java)
+            context.startActivity(intent)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+    }) {
+        Text("Login", color = Color.White)
+    }
+}
+
+
+@Composable
+fun LoginScreen(/*onLoginClicked: @Composable (String, String) -> Unit*/) {
 //
 //
     var email by remember { mutableStateOf("hello@reallygreatesite.com") }
@@ -65,8 +131,23 @@ fun LoginScreen(onLoginClicked: (String, String) -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "ebooks, audiobooks, chatbooks and translations",
-                fontSize = 16.sp,
+                text = "ebooks,",
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = "audiobooks",
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = "chatbooks and ",
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = "translations",
+                fontSize = 20.sp,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(48.dp))
@@ -104,13 +185,17 @@ fun LoginScreen(onLoginClicked: (String, String) -> Unit) {
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { onLoginClicked(email, password)  },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF4081))
-                    ) {
-                        Text("Login", color = Color.White)
-                    }
+                    MainScreen()
+//                    Button(
+//                        onClick = {
+//                                val context = LocalContext.current
+//                   context.startActivity(Intent(context, MainActivity::class.java))
+//                        },
+//                        modifier = Modifier.fillMaxWidth(),
+//                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF4081))
+//                    ) {
+//                        Text("Login", color = Color.White)
+//                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Forget Password ?",
@@ -129,13 +214,22 @@ fun LoginScreen(onLoginClicked: (String, String) -> Unit) {
     }
 }
 
+@Composable
+fun IsUserLoginOrNot(): MutableState<Boolean> {
+    val context = LocalContext.current
+    val preferencesManager = remember { SpHelper(context) }
+    val data = remember { mutableStateOf(preferencesManager.getBool("UserLogin",false)) }
+    return data;
+}
+
+
 
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
     Surface(color = Color.White) {
-        LoginScreen(onLoginClicked = { _, _ -> })
+        LoginScreen(/*onLoginClicked = { _, _ -> }*/)
     }
 }
 

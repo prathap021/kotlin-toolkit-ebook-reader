@@ -17,12 +17,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
-//import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import org.readium.r2.testapp.auth.LoginScreen
-import androidx.compose.runtime.Composable
+
 
 
 
@@ -33,34 +28,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                LoginScreen(onLoginClicked = { username, password ->
-                    print("login button click event triggered");
+        setContentView(R.layout.activity_main)
 
-                    setContentView(R.layout.activity_main)
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-                    val navView: BottomNavigationView = findViewById(R.id.nav_view)
-                    val navHostFragment =
-                        supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                    navController = navHostFragment.navController
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_bookshelf,
+                R.id.navigation_catalog_list,
+                R.id.navigation_about
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
 
-                    val appBarConfiguration = AppBarConfiguration(
-                        setOf(
-                            R.id.navigation_bookshelf,
-                            R.id.navigation_catalog_list,
-                            R.id.navigation_about
-                        )
-                    )
-                    setupActionBarWithNavController(navController, appBarConfiguration)
-                    navView.setupWithNavController(navController)
-
-                    viewModel.channel.receive(this) { handleEvent(it) }
-
-                })
-
-            }
-        }
+        viewModel.channel.receive(this) { handleEvent(it) }
 
     }
 
