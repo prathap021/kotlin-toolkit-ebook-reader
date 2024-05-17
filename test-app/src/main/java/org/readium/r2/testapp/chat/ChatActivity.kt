@@ -12,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
@@ -61,8 +62,10 @@ class ChatActivity : ComponentActivity() {
         setContent {
             ReadiumTheme {
                 val bookId: String? = intent.getStringExtra("bookId")
+                val viewModel: ChatViewModel = viewModel()
+                    ChatScreen(bookId = bookId, viewModel =viewModel)
 
-                ChatScreen(bookId = bookId)
+
             }
         }
     }
@@ -70,12 +73,11 @@ class ChatActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(bookId: String?) {
+fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
 
     val context = LocalContext.current
     val activity = context as Activity
 
-    val viewModel: ChatViewModel = viewModel()
 
     val listState = rememberLazyListState()
     val messages by viewModel.messages.collectAsState()
@@ -217,6 +219,6 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
 @Composable
 fun GreetingPreview() {
     ReadiumTheme {
-        ChatScreen(bookId = "")
+        ChatScreen(viewModel = viewModel(),bookId = "")
     }
 }

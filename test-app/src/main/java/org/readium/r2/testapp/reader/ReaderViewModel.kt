@@ -8,8 +8,11 @@
 
 package org.readium.r2.testapp.reader
 
+import android.content.Context
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.InvalidatingPagingSourceFactory
@@ -44,6 +47,8 @@ import org.readium.r2.shared.util.data.ReadError
 import org.readium.r2.testapp.Application
 import org.readium.r2.testapp.R
 import org.readium.r2.testapp.data.BookRepository
+import org.readium.r2.testapp.data.db.AppDatabase
+import org.readium.r2.testapp.data.model.Book
 import org.readium.r2.testapp.data.model.Highlight
 import org.readium.r2.testapp.domain.toUserError
 import org.readium.r2.testapp.reader.preferences.UserPreferencesViewModel
@@ -64,6 +69,23 @@ class ReaderViewModel(
     EpubNavigatorFragment.Listener,
     ImageNavigatorFragment.Listener,
     PdfNavigatorFragment.Listener {
+
+    private val _book = MutableLiveData<Book>()
+    val book: LiveData<Book> get() = _book
+
+    fun getBook(context:Context, bookId: Long){
+
+            val bookRepository : BookRepository
+
+            val database = AppDatabase.getDatabase(context = context)
+
+            bookRepository = BookRepository(database.booksDao())
+
+            viewModelScope.launch{
+                       _book.value = bookId.let { bookRepository.get(it) }
+            }
+        }
+
 
     val readerInitData =
         try {

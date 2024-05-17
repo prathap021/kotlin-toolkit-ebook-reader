@@ -5,6 +5,7 @@
  */
 
 package org.readium.r2.testapp.reader
+
 import android.net.Uri
 
 import android.os.Bundle
@@ -31,7 +32,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.Observer
 import org.readium.r2.testapp.chat.ChatActivity
+import org.readium.r2.testapp.data.model.Book
 
 //import android.app.AlertDialog
 
@@ -44,8 +50,7 @@ import org.readium.r2.testapp.chat.ChatActivity
 @OptIn(ExperimentalReadiumApi::class)
 abstract class BaseReaderFragment : Fragment() {
 
-    var buyUrl : String = "https://www.amazon.in/s?k=metropolis"
-
+    var buyUrl: String = "https://www.amazon.in/s?k=metropolis"
 
 
     val model: ReaderViewModel by activityViewModels()
@@ -65,6 +70,7 @@ abstract class BaseReaderFragment : Fragment() {
                 is ReaderViewModel.FragmentFeedback.BookmarkFailed -> toast(
                     R.string.bookmark_exists
                 )
+
                 is ReaderViewModel.FragmentFeedback.BookmarkSuccessfullyAdded -> toast(
                     R.string.bookmark_added
                 )
@@ -97,6 +103,7 @@ abstract class BaseReaderFragment : Fragment() {
                             )
                             return true
                         }
+
                         R.id.bookmark -> {
                             model.insertBookmark(navigator.currentLocator.value)
                             return true
@@ -105,20 +112,35 @@ abstract class BaseReaderFragment : Fragment() {
                         R.id.purchase -> {
                             val context: Context = requireContext()
 
-                            context?.let { value-> launchWebBrowser(context,Uri.parse(buyUrl)) }
+                            context?.let { value -> launchWebBrowser(context, Uri.parse(buyUrl)) }
                             return true
                         }
+
                         R.id.chatAi -> {
-                        // chat api working block
+                            // chat api working block
 
-                           val bookId= model.readerInitData.bookId
+                            val bookId = model.readerInitData.bookId
+
+                            model.getBook(requireContext(), bookId)
 
 
-                            context?.startActivity(
-                                Intent(context, ChatActivity::class.java).apply {
-                                    putExtra("bookId", bookId.toString())
+                            model.book.observe(viewLifecycleOwner, Observer { book ->
+
+                                if(book.title == "Indus Valley Civilization – A Land of the ancient Dravidians"){
+                                    context?.startActivity(
+                                        Intent(context, ChatActivity::class.java).apply {
+                                            putExtra("bookId", bookId.toString())
+                                        }
+                                    )
+                                }else{
+                                    Toast.makeText(context, "Chat not available", Toast.LENGTH_SHORT).show()
                                 }
-                            )
+
+
+                            })
+
+
+
                             return true
                         }
 //                        R.id.infoBook -> {
@@ -133,6 +155,7 @@ abstract class BaseReaderFragment : Fragment() {
                                 .show(childFragmentManager, "Settings")
                             return true
                         }
+
                         R.id.drm -> {
                             model.activityChannel.send(
                                 ReaderViewModel.ActivityCommand.OpenDrmManagementRequested

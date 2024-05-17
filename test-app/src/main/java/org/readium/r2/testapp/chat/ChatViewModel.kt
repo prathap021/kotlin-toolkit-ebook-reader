@@ -95,9 +95,6 @@ class ChatViewModel : ViewModel() {
     private val _messages = MutableStateFlow<List<ChatItem>>(emptyList())
     val messages = _messages.asStateFlow()
 
-    var chatUiState: ChatUiState by mutableStateOf(ChatUiState.Loading)
-        private set
-
 
     fun sendMessage(context: Context, userMessage: String, scrollToEnd: () -> Unit, bookId: String?) {
 
@@ -114,13 +111,12 @@ class ChatViewModel : ViewModel() {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
 
-            val originalBookId:Long = when(book?.title){
-                "Indus Valley Civilization"-> {
+            val originalBookId:Long? = when(book?.title){
+                "Indus Valley Civilization – A Land of the ancient Dravidians"-> {
                     56
                 }
-                else ->{
-                    2
-                }
+
+                else -> {null}
             }
 
 
