@@ -1,7 +1,6 @@
 package org.readium.r2.testapp.chat
 
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -10,35 +9,27 @@ import org.readium.r2.testapp.chat.ui.theme.ReadiumTheme
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,12 +42,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.readium.r2.testapp.chat.ui.theme.ReadiumTheme
 
 data class ChatItem(
     var message: String,
@@ -69,7 +60,9 @@ class ChatActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ReadiumTheme {
-                ChatScreen()
+                val bookId: String? = intent.getStringExtra("bookId")
+
+                ChatScreen(bookId = bookId)
             }
         }
     }
@@ -77,22 +70,14 @@ class ChatActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(bookId: String?) {
 
     val context = LocalContext.current
     val activity = context as Activity
 
-    /*var listOfChatItems = mutableListOf<ChatItem>(
-        ChatItem(message = "Question", isQuestion = true),
-        ChatItem(message = "Answer", isQuestion = false),
-        ChatItem(message = "Question", isQuestion = true),
-        ChatItem(message = "Answer", isQuestion = false),
-        ChatItem(message = "Question", isQuestion = true),
-        ChatItem(message = "Answer", isQuestion = false),
-    )*/
     val viewModel: ChatViewModel = viewModel()
 
-    val listState= rememberLazyListState()
+    val listState = rememberLazyListState()
     val messages by viewModel.messages.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -105,8 +90,10 @@ fun ChatScreen() {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+
                         activity.finish()
                     }) {
+
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back")
                     }
                 },
@@ -137,12 +124,12 @@ fun ChatScreen() {
                 IconButton(onClick = {
 
 
-                    if(typedMessage.isNotEmpty()) {
-                        viewModel.sendMessage(typedMessage, onDone = {
+                    if (typedMessage.isNotEmpty()) {
+                        viewModel.sendMessage(context = context, typedMessage.trim(), scrollToEnd = {
                             scope.launch {
                                 listState.scrollToItem(messages.size)
                             }
-                        })
+                        }, bookId = bookId)
                         typedMessage = ""
 //                        scope.launch {
 //                            listState.scrollToItem(messages.size)
@@ -174,27 +161,53 @@ fun ChatScreen() {
 }
 
 
-
-
 @Composable
 fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = if (chatItem.isQuestion) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = Alignment.CenterStart
+        //if (chatItem.isQuestion) Alignment.CenterEnd else Alignment.CenterStart
     ) {
-        Box(
-            modifier = modifier
-                .fillMaxSize(0.7f)
-                .border(
-                    border = BorderStroke(color = Color.Gray, width = 1.dp),
-                    shape = RoundedCornerShape(18.dp)
-                )
-                .background(Color.Transparent)
-                .padding(vertical = 8.dp, horizontal = 12.dp),
-            contentAlignment = Alignment.CenterStart,
+        Row {
 
+
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = if (chatItem.isQuestion) Color(
+                            0xFFeaedef
+                        ) else Color(0xFFEBF6FF), shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-            Text(text = chatItem.message, lineHeight = 16.sp)
+                Icon(
+                    imageVector = if (chatItem.isQuestion) Icons.Default.Person else Icons.Default.Book,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = Color.DarkGray
+                )
+            }
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Box(
+                modifier = modifier
+//                    .border(
+//                        border = BorderStroke(color = Color.Gray, width = 1.dp),
+//                        shape = RoundedCornerShape(18.dp)
+//                    )
+                    .background(
+                        if (chatItem.isQuestion) Color(
+                            0xFFeaedef
+                        ) else Color(0xFFEBF6FF),
+                        shape = RoundedCornerShape(18.dp)
+                    )
+                    .padding(vertical = 8.dp, horizontal = 12.dp),
+                contentAlignment = Alignment.CenterStart,
+
+                ) {
+                Text(text = chatItem.message, lineHeight = 18.sp, color = Color.DarkGray, fontFamily = FontFamily.SansSerif)
+            }
         }
     }
 }
@@ -204,6 +217,6 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
 @Composable
 fun GreetingPreview() {
     ReadiumTheme {
-        ChatScreen()
+        ChatScreen(bookId = "")
     }
 }

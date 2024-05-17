@@ -9,6 +9,7 @@ package org.readium.r2.testapp.reader
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
@@ -174,6 +175,7 @@ class EpubReaderFragment : VisualReaderFragment() {
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     when (menuItem.itemId) {
+
                         R.id.search -> {
                             return true
                         }

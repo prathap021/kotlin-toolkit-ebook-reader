@@ -30,6 +30,7 @@ import org.readium.r2.testapp.utils.launchWebBrowser
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import org.readium.r2.testapp.chat.ChatActivity
 
 //import android.app.AlertDialog
@@ -109,8 +110,14 @@ abstract class BaseReaderFragment : Fragment() {
                         }
                         R.id.chatAi -> {
                         // chat api working block
+
+                           val bookId= model.readerInitData.bookId
+
+
                             context?.startActivity(
-                                Intent(context, ChatActivity::class.java)
+                                Intent(context, ChatActivity::class.java).apply {
+                                    putExtra("bookId", bookId.toString())
+                                }
                             )
                             return true
                         }
