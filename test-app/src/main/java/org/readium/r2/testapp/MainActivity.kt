@@ -33,34 +33,34 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            MaterialTheme {
+                LoginScreen(onLoginClicked = { username, password ->
+                    print("login button click event triggered");
 
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
+                    setContentView(R.layout.activity_main)
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_bookshelf,
-                R.id.navigation_catalog_list,
-                R.id.navigation_about
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+                    val navView: BottomNavigationView = findViewById(R.id.nav_view)
+                    val navHostFragment =
+                        supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                    navController = navHostFragment.navController
 
-        viewModel.channel.receive(this) { handleEvent(it) }
-//        setContent {
-//            MaterialTheme {
-//                LoginScreen(onLoginClicked = { username, password ->
-//
-//
-//
-//                })
-//
-//            }
-//        }
+                    val appBarConfiguration = AppBarConfiguration(
+                        setOf(
+                            R.id.navigation_bookshelf,
+                            R.id.navigation_catalog_list,
+                            R.id.navigation_about
+                        )
+                    )
+                    setupActionBarWithNavController(navController, appBarConfiguration)
+                    navView.setupWithNavController(navController)
+
+                    viewModel.channel.receive(this) { handleEvent(it) }
+
+                })
+
+            }
+        }
 
     }
 
