@@ -109,6 +109,7 @@ dependencies {
 
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
+    implementation("io.coil-kt:coil-compose:2.2.2")
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
