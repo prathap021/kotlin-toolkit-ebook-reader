@@ -82,14 +82,6 @@ data class Answer(
     val answer: String? = null
 )
 
-
-sealed interface ChatUiState {
-    data class Success(val answer: String) : ChatUiState
-    object Error : ChatUiState
-    object Loading : ChatUiState
-}
-
-
 class ChatViewModel : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatItem>>(emptyList())
@@ -113,7 +105,10 @@ class ChatViewModel : ViewModel() {
 
             val originalBookId:Long? = when(book?.title){
                 "Indus Valley Civilization – A Land of the ancient Dravidians"-> {
-                    56
+                    59
+                }
+                "WHITE NIGHTS" -> {
+                    60
                 }
 
                 else -> {null}

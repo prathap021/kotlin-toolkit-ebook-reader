@@ -10,6 +10,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.readium.r2.shared.util.AbsoluteUrl
+import org.readium.r2.shared.util.Language
 import org.readium.r2.shared.util.mediatype.MediaType
 
 @Entity(tableName = Book.TABLE_NAME)
@@ -32,7 +33,9 @@ data class Book(
     @ColumnInfo(name = MEDIA_TYPE)
     val rawMediaType: String,
     @ColumnInfo(name = COVER)
-    val cover: String
+    val cover: String,
+    @ColumnInfo(name = LANGUAGE)
+    val language: String?=null,
 ) {
 
     constructor(
@@ -44,7 +47,8 @@ data class Book(
         identifier: String,
         progression: String? = null,
         mediaType: MediaType,
-        cover: String
+        cover: String,
+        language: String? = null
     ) : this(
         id = id,
         creation = creation,
@@ -54,7 +58,8 @@ data class Book(
         identifier = identifier,
         progression = progression,
         rawMediaType = mediaType.toString(),
-        cover = cover
+        cover = cover,
+        language =language,
     )
 
     val url: AbsoluteUrl get() = AbsoluteUrl(href)!!
@@ -74,5 +79,6 @@ data class Book(
         const val PROGRESSION = "progression"
         const val MEDIA_TYPE = "media_type"
         const val COVER = "cover"
+        const val LANGUAGE = "language"
     }
 }
