@@ -7,10 +7,13 @@
 package org.readium.r2.testapp.data.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import org.readium.r2.testapp.data.model.*
 import org.readium.r2.testapp.data.model.Book
 import org.readium.r2.testapp.data.model.Bookmark
@@ -19,8 +22,8 @@ import org.readium.r2.testapp.data.model.Highlight
 
 @Database(
     entities = [Book::class, Bookmark::class, Highlight::class, Catalog::class],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = false,
 )
 @TypeConverters(
     HighlightConverters::class
@@ -35,6 +38,12 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE ${Book.TABLE_NAME} ADD COLUMN ${Book.LANG_CODE} VARCHAR");
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             val tempInstance = INSTANCE
             if (tempInstance != null) {
@@ -45,7 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "database"
-                ).build()
+                ).addMigrations(MIGRATION_1_2).build()
                 INSTANCE = instance
                 return instance
             }

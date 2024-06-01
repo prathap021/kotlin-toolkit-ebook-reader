@@ -32,7 +32,9 @@ data class Book(
     @ColumnInfo(name = MEDIA_TYPE)
     val rawMediaType: String,
     @ColumnInfo(name = COVER)
-    val cover: String
+    val cover: String,
+    @ColumnInfo(name = LANG_CODE)
+    val langCode: String? = null
 ) {
 
     constructor(
@@ -44,7 +46,8 @@ data class Book(
         identifier: String,
         progression: String? = null,
         mediaType: MediaType,
-        cover: String
+        cover: String,
+        langCode: String? = null
     ) : this(
         id = id,
         creation = creation,
@@ -54,7 +57,8 @@ data class Book(
         identifier = identifier,
         progression = progression,
         rawMediaType = mediaType.toString(),
-        cover = cover
+        cover = cover,
+        langCode = langCode
     )
 
     val url: AbsoluteUrl get() = AbsoluteUrl(href)!!
@@ -74,5 +78,6 @@ data class Book(
         const val PROGRESSION = "progression"
         const val MEDIA_TYPE = "media_type"
         const val COVER = "cover"
+        const val LANG_CODE = "lang_code"
     }
 }

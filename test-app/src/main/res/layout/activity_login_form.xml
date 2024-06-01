@@ -23,7 +23,7 @@
             android:id="@+id/text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOGIN"
+            android:text="CHAI READER"
             android:layout_marginTop="180dp"
             android:textColor="@color/black"
             android:textStyle="bold"

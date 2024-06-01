@@ -91,7 +91,10 @@ class BookRepository(
             identifier = publication.metadata.identifier ?: "",
             mediaType = mediaType,
             progression = "{}",
-            cover = cover.path
+            cover = cover.path ,
+            langCode = publication.metadata.language?.code
+
+
         )
         return booksDao.insertBook(book)
     }

@@ -6,15 +6,19 @@
 
 package org.readium.r2.testapp.bookshelf
 
+import android.annotation.TargetApi
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -24,6 +28,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.Locale
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.readium.r2.shared.util.AbsoluteUrl
@@ -34,6 +39,7 @@ import org.readium.r2.testapp.databinding.FragmentBookshelfBinding
 import org.readium.r2.testapp.opds.GridAutoFitLayoutManager
 import org.readium.r2.testapp.reader.ReaderActivityContract
 import org.readium.r2.testapp.utils.viewLifecycle
+
 
 class BookshelfFragment : Fragment() {
 
@@ -57,6 +63,8 @@ class BookshelfFragment : Fragment() {
     private val app: Application
         get() = requireContext().applicationContext as Application
 
+//    val locale = requireContext().applicationContext.getCurrentLocale()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,9 +84,11 @@ class BookshelfFragment : Fragment() {
         bookshelfAdapter = BookshelfAdapter(
             onBookClick = { book ->
                 book.id?.let {
-                   println("book details is " + book.id +
-                   "=="+ book.title + "=="
-                   +book.author)
+//                    val locale = applicationContext.getCurrentLocale()
+                    Toast.makeText(context, "Lang details: ${book.langCode}", Toast.LENGTH_LONG).show()
+                   println("book details is " +book.langCode)
+//                    println("App language is --->"+locale)
+
 
                     bookshelfViewModel.openPublication(it)
                 }
@@ -140,6 +150,21 @@ class BookshelfFragment : Fragment() {
                 .show()
         }
     }
+
+//    @TargetApi(Build.VERSION_CODES.M)
+//    private fun getCurrentDefaultLocaleStr(context: Context): String {
+//        val locale: Locale = context.getResources().getConfiguration().locale
+//        return locale.getDefault().get
+//    }
+
+//    fun Context.getCurrentLocale(): Locale {
+//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+//            this.resources.configuration.locales.get(0);
+//        } else{
+//            this.resources.configuration.locale;
+//        }
+//    }
+
 
     private fun askForRemoteUrl() {
         val urlEditText = EditText(requireContext())
