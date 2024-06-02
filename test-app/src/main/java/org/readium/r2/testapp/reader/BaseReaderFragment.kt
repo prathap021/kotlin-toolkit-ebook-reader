@@ -181,6 +181,9 @@ abstract class BaseReaderFragment : Fragment() {
                             )
                             return true
                         }
+
+
+
                     }
                     return false
                 }

@@ -6,12 +6,21 @@
 
 package org.readium.r2.testapp.reader
 
+import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.view.WindowManager
+import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.commit
@@ -27,13 +36,30 @@ import org.readium.r2.testapp.drm.DrmManagementFragment
 import org.readium.r2.testapp.outline.OutlineContract
 import org.readium.r2.testapp.outline.OutlineFragment
 import org.readium.r2.testapp.utils.launchWebBrowser
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.readium.r2.lcp.lcpLicense
+import org.readium.r2.navigator.media.MediaService.Companion.navigator
+import org.readium.r2.navigator.preferences.Configurable
+import org.readium.r2.shared.InternalReadiumApi
+import org.readium.r2.testapp.reader.preferences.MainPreferencesBottomSheetDialogFragment
+import timber.log.Timber
 
 /*
  * An activity to read a publication
  *
  * This class can be used as it is or be inherited from.
  */
-open class ReaderActivity : AppCompatActivity() {
+class ReaderActivity : AppCompatActivity() {
 
     private val model: ReaderViewModel by viewModels()
 
@@ -46,6 +72,7 @@ open class ReaderActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReaderBinding
     private lateinit var readerFragment: BaseReaderFragment
 
+    @OptIn(InternalReadiumApi::class, ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -96,7 +123,12 @@ open class ReaderActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
+
+
+
+
     }
+
 
     private fun createReaderFragment(readerData: ReaderInitData): BaseReaderFragment? {
         val readerClass: Class<out Fragment>? = when (readerData) {
@@ -197,4 +229,10 @@ open class ReaderActivity : AppCompatActivity() {
         const val OUTLINE_FRAGMENT_TAG = "outline"
         const val DRM_FRAGMENT_TAG = "drm"
     }
+
+
+
+
+
+
 }

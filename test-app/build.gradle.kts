@@ -147,6 +147,12 @@ dependencies {
 
 //    implementation
 
+    
+    implementation( "io.coil-kt:coil-compose:2.5.0")
+    implementation( "io.coil-kt:coil-gif:2.1.0")
+    implementation("com.airbnb.android:lottie-compose:4.0.0")
+
+
 
     // Tests
     testImplementation(libs.junit)

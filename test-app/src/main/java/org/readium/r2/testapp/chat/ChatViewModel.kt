@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
@@ -29,8 +30,7 @@ import retrofit2.http.Query
 interface JokeApiService {
     @GET("/ai_chat/chat-with-pdf")
     suspend fun getRandomJoke(
-        @Query("file_id") bookId: Long?,
-        @Query("chat_text") message: String
+        @Query("file_id") bookId: Long?, @Query("chat_text") message: String
     ): Response<Answer>
 }
 
@@ -41,27 +41,20 @@ object RetrofitInstance {
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
 
 
-        val httpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor(Interceptor { chain ->
+        val httpClient =
+            OkHttpClient.Builder().addInterceptor(logging).addInterceptor(Interceptor { chain ->
                 val original = chain.request()
-                val requestBuilder = original.newBuilder()
-                    .header(
-                        "Authorization",
-                        "Api-Key FulsIWQv.ZWLubipTTfIgzYTyURo314FHE23Moe0Z"
-                    )  // Replace "YOUR_API_KEY" with your actual API key
+                val requestBuilder = original.newBuilder().header(
+                    "Authorization", "Api-Key FulsIWQv.ZWLubipTTfIgzYTyURo314FHE23Moe0Z"
+                )  // Replace "YOUR_API_KEY" with your actual API key
                     .method(original.method, original.body)
                 val request = requestBuilder.build()
                 chain.proceed(request)
-            })
-            .build()
+            }).build()
 
 
-        Retrofit.Builder()
-            .baseUrl("https://api.booktalkstaging.ailaysa.com")
-            .client(httpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        Retrofit.Builder().baseUrl("https://api.booktalkstaging.ailaysa.com").client(httpClient)
+            .addConverterFactory(GsonConverterFactory.create()).build()
 
     }
 
@@ -73,25 +66,27 @@ object RetrofitInstance {
 
 @Serializable
 data class Answer(
-    val id: Long? = null,
-    val question: String? = null,
+    val id: Long? = null, val question: String? = null,
 
-    @SerialName("created_at")
-    val createdAt: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
 
     val answer: String? = null
 )
 
 class ChatViewModel : ViewModel() {
 
-    private val _messages = MutableStateFlow<List<ChatItem>>(emptyList())
+    private var _messages = MutableStateFlow<List<ChatItem>>(emptyList())
     val messages = _messages.asStateFlow()
 
+    private var _isLoading = MutableStateFlow<Boolean>(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun sendMessage(context: Context, userMessage: String, scrollToEnd: () -> Unit, bookId: String?) {
+    fun sendMessage(
+        context: Context, userMessage: String, scrollToEnd: () -> Unit, bookId: String?
+    ) {
 
 
-        val bookRepository : BookRepository
+        val bookRepository: BookRepository
 
         val database = AppDatabase.getDatabase(context)
 
@@ -103,35 +98,47 @@ class ChatViewModel : ViewModel() {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
 
-            val originalBookId:Long? = when(book?.title){
-                "Indus Valley Civilization – A Land of the ancient Dravidians"-> {
+            val originalBookId: Long? = when (book?.title) {
+                "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
                     59
                 }
+
                 "WHITE NIGHTS" -> {
                     60
                 }
 
-                else -> {null}
+                else -> {
+                    null
+                }
             }
 
 
             try {
 
                 if (NetworkUtils.isNetworkAvailable(context)) {
-                    _messages.value = _messages.value + ChatItem(message = userMessage, isQuestion = true)
+
+                    _isLoading.value = true
+
+                    _messages.value =
+                        _messages.value + ChatItem(message = userMessage, isQuestion = true)
                     scrollToEnd.invoke()
 
                     val response = RetrofitInstance.api.getRandomJoke(originalBookId, userMessage)
 
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            _messages.value += ChatItem(message = it.answer ?: "", isQuestion = false)
+                            _messages.value += ChatItem(
+                                message = it.answer ?: "", isQuestion = false
+                            )
                         }
                         scrollToEnd.invoke()
+                        _isLoading.value = false
                     }
 
-                }else{
-                    Toast.makeText(context,"Check your internet connection", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT)
+                        .show()
+                    _isLoading.value = false
 
                 }
 

@@ -7,14 +7,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import org.readium.r2.testapp.chat.ui.theme.ReadiumTheme
 import android.app.Activity
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +30,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,14 +45,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.launch
+import org.readium.r2.testapp.R
+import org.readium.r2.testapp.data.db.AppDatabase
 
 data class ChatItem(
     var message: String,
@@ -63,7 +82,7 @@ class ChatActivity : ComponentActivity() {
             ReadiumTheme {
                 val bookId: String? = intent.getStringExtra("bookId")
                 val viewModel: ChatViewModel = viewModel()
-                    ChatScreen(bookId = bookId, viewModel =viewModel)
+                ChatScreen(bookId = bookId, viewModel = viewModel)
 
 
             }
@@ -82,7 +101,17 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
     val listState = rememberLazyListState()
     val messages by viewModel.messages.collectAsState()
     val scope = rememberCoroutineScope()
+    val isLoading by viewModel.isLoading.collectAsState()
 
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            if (SDK_INT >= 28) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }
+        .build()
 
     Scaffold(
         topBar = {
@@ -125,22 +154,29 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
                 Spacer(modifier = Modifier.size(8.dp))
                 IconButton(onClick = {
 
-
-                    if (typedMessage.isNotEmpty()) {
-                        viewModel.sendMessage(context = context, typedMessage.trim(), scrollToEnd = {
-                            scope.launch {
-                                listState.scrollToItem(messages.size)
-                            }
-                        }, bookId = bookId)
-                        typedMessage = ""
+                    if (isLoading == false) {
+                        if (typedMessage.isNotEmpty()) {
+                            viewModel.sendMessage(
+                                context = context,
+                                typedMessage.trim(),
+                                scrollToEnd = {
+                                    scope.launch {
+                                        listState.scrollToItem(messages.size)
+                                    }
+                                },
+                                bookId = bookId
+                            )
+                            typedMessage = ""
 //                        scope.launch {
 //                            listState.scrollToItem(messages.size)
 //                        }
 
+                        }
                     }
+
                 }, modifier = Modifier.weight(0.1f)) {
                     Icon(
-                        imageVector = Icons.Default.Send,
+                        imageVector = if(isLoading) Icons.Default.Stop else Icons.Default.Send,
                         contentDescription = "Send",
                     )
                 }
@@ -157,6 +193,25 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
         ) {
             items(messages) {
                 ChatBubble(chatItem = it, modifier = Modifier)
+            }
+            if (isLoading) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        // Typing GIF
+                        AnimatedPreloader(modifier = Modifier.size(50.dp))                        /*AsyncImage(
+                            model = R.drawable.loading3,
+                            contentDescription = "typing..",
+                            imageLoader = imageLoader,
+                            modifier = Modifier.size(40.dp)
+                        )
+*/
+                    }
+                }
             }
         }
     }
@@ -183,6 +238,7 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
+
                 Icon(
                     imageVector = if (chatItem.isQuestion) Icons.Default.Person else Icons.Default.Book,
                     contentDescription = null,
@@ -208,7 +264,12 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
                 contentAlignment = Alignment.CenterStart,
 
                 ) {
-                Text(text = chatItem.message, lineHeight = 18.sp, color = Color.DarkGray, fontFamily = FontFamily.SansSerif)
+                Text(
+                    text = chatItem.message,
+                    lineHeight = 18.sp,
+                    color = Color.DarkGray,
+                    fontFamily = FontFamily.SansSerif
+                )
             }
         }
     }
@@ -219,6 +280,54 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
 @Composable
 fun GreetingPreview() {
     ReadiumTheme {
-        ChatScreen(viewModel = viewModel(),bookId = "")
+        ChatScreen(viewModel = viewModel(), bookId = "")
     }
+}
+
+
+@Composable
+fun GifImage(
+    modifier: Modifier = Modifier,
+    id: Int,
+) {
+    val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            if (SDK_INT >= 28) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }
+        .build()
+
+    Image(
+        painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(context).data(data = id).build(), imageLoader = imageLoader
+        ),
+        contentDescription = null,
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+fun AnimatedPreloader(modifier: Modifier = Modifier) {
+    val preloaderLottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(
+            R.raw.loading
+        )
+    )
+
+    val preloaderProgress by animateLottieCompositionAsState(
+        preloaderLottieComposition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true
+    )
+
+
+    LottieAnimation(
+        composition = preloaderLottieComposition,
+        progress = preloaderProgress,
+        modifier = modifier
+    )
 }

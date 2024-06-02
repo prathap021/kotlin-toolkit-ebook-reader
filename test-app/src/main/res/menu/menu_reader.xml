@@ -30,7 +30,16 @@
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction"/>
 
-<!--    <item-->
+    <item
+        android:id="@+id/switch_language"
+        android:icon="@drawable/language_switch"
+        android:title="@string/epubactivity_chat"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction"/>
+
+
+
+    <!--    <item-->
 <!--        android:id="@+id/infoBook"-->
 <!--        android:icon="@drawable/guidebook"-->
 <!--        android:title="@string/epubactivity_infoBook"-->

@@ -6,6 +6,7 @@
 
 package org.readium.r2.testapp.reader
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -29,20 +30,44 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -84,6 +109,7 @@ import org.readium.r2.testapp.utils.padSystemUi
 import org.readium.r2.testapp.utils.showSystemUi
 import org.readium.r2.testapp.utils.toggleSystemUi
 import org.readium.r2.testapp.utils.viewLifecycle
+import timber.log.Timber
 
 /*
  * Base reader fragment class
@@ -111,6 +137,7 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
      */
     private var disableTouches by mutableStateOf(false)
 
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -163,6 +190,8 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
         }
 
         val menuHost: MenuHost = requireActivity()
+        val composeView: ComposeView = requireActivity().findViewById(R.id.overlay)
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
         menuHost.addMenuProvider(
             object : MenuProvider {
@@ -170,11 +199,54 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
                     menu.findItem(R.id.tts).isVisible = (model.tts != null)
                 }
 
+                @SuppressLint("CoroutineCreationDuringComposition")
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     when (menuItem.itemId) {
                         R.id.tts -> {
                             checkNotNull(model.tts).start(navigator)
                             return true
+                        }
+
+                        R.id.switch_language -> {
+                            var isInit = true
+
+                            composeView.visibility = View.VISIBLE
+                            composeView.setContent {
+                                val bottomSheetState = rememberModalBottomSheetState(
+                                    ModalBottomSheetValue.Hidden
+                                )
+                                val coroutineScope = rememberCoroutineScope()
+                                Timber.tag("readersaba").d(bottomSheetState.isVisible.toString())
+                                if (isInit) {
+                                    if (!bottomSheetState.isVisible) {
+                                        coroutineScope.launch {
+                                            bottomSheetState.show()
+
+                                            composeView.visibility = View.VISIBLE
+                                            isInit = false
+                                        }
+                                    }
+                                }
+
+//                                LaunchedEffect(bottomSheetState) {
+//                                    coroutineScope.launch {
+//                                        bottomSheetState.show()
+//                                    }
+//                                }
+
+                                MyModalBottomSheet(
+                                    bottomSheetState,
+                                    modifier = Modifier.systemBarsPadding()
+                                ) {
+                                    coroutineScope.launch {
+                                        bottomSheetState.hide()
+
+                                        composeView.visibility = View.GONE
+                                    }
+                                }
+                            }
+
+
                         }
                     }
                     return false
@@ -190,6 +262,68 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
             }
         }
     }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun MyModalBottomSheet(
+        bottomSheetState: ModalBottomSheetState,
+        modifier: Modifier,
+        onDismiss: () -> Unit
+    ) {
+
+        ModalBottomSheetLayout(
+            modifier = modifier,
+            sheetState = bottomSheetState,
+            sheetContent = {
+                Column(
+                    modifier = Modifier,
+                ) {
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Choose Language", style = MaterialTheme.typography.h6)
+                        IconButton(onClick = { onDismiss.invoke() }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
+                        }
+                    }
+
+
+                    Text(text = "English",
+                        fontSize = 16.sp,
+                        lineHeight = 20.sp,
+
+
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { }
+                            .padding(vertical = 12.dp, horizontal = 24.dp)
+
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(text = "English",
+                        fontSize = 16.sp,
+                        lineHeight = 20.sp,
+
+
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { }
+                            .padding(vertical = 12.dp, horizontal = 24.dp)
+
+                    )
+
+                }
+            }
+        ) {
+            // Empty content as we're using this Composable only for the BottomSheet
+        }
+    }
+
 
     @Composable
     private fun BoxScope.Overlay() {
@@ -253,6 +387,7 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
                         is TtsViewModel.Event.OnError -> {
                             showError(event.error.toUserError())
                         }
+
                         is TtsViewModel.Event.OnMissingVoiceData ->
                             confirmAndInstallTtsVoice(event.language)
                     }
