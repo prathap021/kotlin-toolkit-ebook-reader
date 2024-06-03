@@ -27,6 +27,7 @@ interface BooksDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBook(book: Book): Long
 
+
     /**
      * Deletes a book
      * @param bookId The ID of the book
@@ -40,6 +41,8 @@ interface BooksDao {
     @Query("SELECT * FROM " + Book.TABLE_NAME + " WHERE " + Book.ID + " = :id")
     suspend fun get(id: Long): Book?
 
+    @Query("SELECT * FROM " + Book.TABLE_NAME + " WHERE " + Book.IDENTIFIER + " = :identifier")
+     fun getBookWithIdentifier(identifier: String):Flow<List<Book>>
     /**
      * Retrieve all books
      * @return List of books as Flow

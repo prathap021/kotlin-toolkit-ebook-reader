@@ -8,6 +8,7 @@ package org.readium.r2.testapp.bookshelf
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -21,8 +22,7 @@ import org.readium.r2.testapp.utils.EventChannel
 
 class BookshelfViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val app get() =
-        getApplication<org.readium.r2.testapp.Application>()
+    private val app get() = getApplication<org.readium.r2.testapp.Application>()
 
     val channel = EventChannel(Channel<Event>(Channel.BUFFERED), viewModelScope)
     val books = app.bookRepository.books()
@@ -47,6 +47,8 @@ class BookshelfViewModel(application: Application) : AndroidViewModel(applicatio
     fun openPublication(
         bookId: Long
     ) {
+
+        Log.e("readersaba", bookId.toString())
         viewModelScope.launch {
             app.readerRepository
                 .open(bookId)

@@ -9,6 +9,7 @@ package org.readium.r2.testapp.data
 import androidx.annotation.ColorInt
 import java.io.File
 import kotlinx.coroutines.flow.Flow
+import org.intellij.lang.annotations.Identifier
 import org.joda.time.DateTime
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
@@ -28,6 +29,7 @@ class BookRepository(
 
     suspend fun get(id: Long) = booksDao.get(id)
 
+    suspend fun getBooksWithIdentifier(identifier: String) = booksDao.getBookWithIdentifier(identifier)
     suspend fun saveProgression(locator: Locator, bookId: Long) =
         booksDao.saveProgression(locator.toJSON().toString(), bookId)
 

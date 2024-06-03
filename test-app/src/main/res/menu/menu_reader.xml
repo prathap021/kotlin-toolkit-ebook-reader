@@ -35,7 +35,7 @@
         android:icon="@drawable/language_switch"
         android:title="@string/epubactivity_chat"
         app:showAsAction="always"
-        tools:ignore="AlwaysShowAction"/>
+        tools:ignore="AlwaysShowAction" />
 
 
 

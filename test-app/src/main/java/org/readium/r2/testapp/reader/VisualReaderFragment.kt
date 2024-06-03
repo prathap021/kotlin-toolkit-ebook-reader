@@ -95,6 +95,8 @@ import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.util.Language
 import org.readium.r2.testapp.R
+import org.readium.r2.testapp.data.BookRepository
+import org.readium.r2.testapp.data.db.AppDatabase
 import org.readium.r2.testapp.data.model.Highlight
 import org.readium.r2.testapp.databinding.FragmentReaderBinding
 import org.readium.r2.testapp.reader.tts.TtsControls
@@ -123,6 +125,12 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
 
     private lateinit var navigatorFragment: Fragment
 
+
+   lateinit var bookRepository: BookRepository
+
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -137,9 +145,16 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
      */
     private var disableTouches by mutableStateOf(false)
 
+
+
     @OptIn(ExperimentalMaterialApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val database = AppDatabase.getDatabase(requireContext())
+
+        bookRepository = BookRepository(database.booksDao())
+
 
         navigatorFragment = navigator as Fragment
 
@@ -190,8 +205,6 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
         }
 
         val menuHost: MenuHost = requireActivity()
-        val composeView: ComposeView = requireActivity().findViewById(R.id.overlay)
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
         menuHost.addMenuProvider(
             object : MenuProvider {
@@ -207,47 +220,7 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
                             return true
                         }
 
-                        R.id.switch_language -> {
-                            var isInit = true
 
-                            composeView.visibility = View.VISIBLE
-                            composeView.setContent {
-                                val bottomSheetState = rememberModalBottomSheetState(
-                                    ModalBottomSheetValue.Hidden
-                                )
-                                val coroutineScope = rememberCoroutineScope()
-                                Timber.tag("readersaba").d(bottomSheetState.isVisible.toString())
-                                if (isInit) {
-                                    if (!bottomSheetState.isVisible) {
-                                        coroutineScope.launch {
-                                            bottomSheetState.show()
-
-                                            composeView.visibility = View.VISIBLE
-                                            isInit = false
-                                        }
-                                    }
-                                }
-
-//                                LaunchedEffect(bottomSheetState) {
-//                                    coroutineScope.launch {
-//                                        bottomSheetState.show()
-//                                    }
-//                                }
-
-                                MyModalBottomSheet(
-                                    bottomSheetState,
-                                    modifier = Modifier.systemBarsPadding()
-                                ) {
-                                    coroutineScope.launch {
-                                        bottomSheetState.hide()
-
-                                        composeView.visibility = View.GONE
-                                    }
-                                }
-                            }
-
-
-                        }
                     }
                     return false
                 }
@@ -260,67 +233,6 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
                 is ReaderViewModel.VisualFragmentCommand.ShowPopup ->
                     showFootnotePopup(event.text)
             }
-        }
-    }
-
-    @OptIn(ExperimentalMaterialApi::class)
-    @Composable
-    fun MyModalBottomSheet(
-        bottomSheetState: ModalBottomSheetState,
-        modifier: Modifier,
-        onDismiss: () -> Unit
-    ) {
-
-        ModalBottomSheetLayout(
-            modifier = modifier,
-            sheetState = bottomSheetState,
-            sheetContent = {
-                Column(
-                    modifier = Modifier,
-                ) {
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Choose Language", style = MaterialTheme.typography.h6)
-                        IconButton(onClick = { onDismiss.invoke() }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
-                        }
-                    }
-
-
-                    Text(text = "English",
-                        fontSize = 16.sp,
-                        lineHeight = 20.sp,
-
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { }
-                            .padding(vertical = 12.dp, horizontal = 24.dp)
-
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text(text = "English",
-                        fontSize = 16.sp,
-                        lineHeight = 20.sp,
-
-
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { }
-                            .padding(vertical = 12.dp, horizontal = 24.dp)
-
-                    )
-
-                }
-            }
-        ) {
-            // Empty content as we're using this Composable only for the BottomSheet
         }
     }
 

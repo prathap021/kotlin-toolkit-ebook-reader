@@ -6,6 +6,7 @@
 
 package org.readium.r2.testapp.reader
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -15,16 +16,53 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.os.BundleCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentResultListener
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import org.readium.r2.navigator.DecorableNavigator
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.epub.*
@@ -35,10 +73,16 @@ import org.readium.r2.navigator.preferences.FontFamily
 import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.epub.pageList
+import org.readium.r2.testapp.Application
 import org.readium.r2.testapp.LITERATA
 import org.readium.r2.testapp.R
+import org.readium.r2.testapp.bookshelf.BookshelfViewModel
+import org.readium.r2.testapp.data.BookRepository
+import org.readium.r2.testapp.data.model.Book
 import org.readium.r2.testapp.reader.preferences.UserPreferencesViewModel
 import org.readium.r2.testapp.search.SearchFragment
+import org.readium.r2.testapp.utils.EventChannel
+import timber.log.Timber
 
 @OptIn(ExperimentalReadiumApi::class)
 class EpubReaderFragment : VisualReaderFragment() {
@@ -49,6 +93,10 @@ class EpubReaderFragment : VisualReaderFragment() {
     lateinit var menuSearchView: SearchView
 
     private var isSearchViewIconified = true
+
+    private val scope = CoroutineScope(newSingleThreadContext("name"))
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
@@ -85,7 +133,8 @@ class EpubReaderFragment : VisualReaderFragment() {
                     )
 
                     // Register the HTML templates for our custom decoration styles.
-                    decorationTemplates[DecorationStyleAnnotationMark::class] = annotationMarkTemplate()
+                    decorationTemplates[DecorationStyleAnnotationMark::class] =
+                        annotationMarkTemplate()
                     decorationTemplates[DecorationStylePageNumber::class] = pageNumberTemplate()
 
                     // Declare a custom font family for reflowable EPUBs.
@@ -123,6 +172,7 @@ class EpubReaderFragment : VisualReaderFragment() {
         super.onCreate(savedInstanceState)
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -140,11 +190,14 @@ class EpubReaderFragment : VisualReaderFragment() {
                 )
             }
         }
-        navigator = childFragmentManager.findFragmentByTag(NAVIGATOR_FRAGMENT_TAG) as EpubNavigatorFragment
+        navigator =
+            childFragmentManager.findFragmentByTag(NAVIGATOR_FRAGMENT_TAG) as EpubNavigatorFragment
 
         return view
     }
 
+
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -158,6 +211,28 @@ class EpubReaderFragment : VisualReaderFragment() {
                 (navigator as? DecorableNavigator)?.applyPageNumberDecorations()
             }
         }
+
+        val composeView: ComposeView = requireActivity().findViewById(R.id.overlay)
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+        val booksList: MutableList<Book> = mutableListOf<Book>()
+
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.readerInitData.publication.metadata.identifier?.let {
+                    bookRepository.getBooksWithIdentifier(
+                        it
+                    )
+                }?.collectLatest {
+                    booksList.clear()
+                    booksList.addAll(
+                        it
+                    )
+                }
+            }
+        }
+
 
         val menuHost: MenuHost = requireActivity()
 
@@ -173,15 +248,55 @@ class EpubReaderFragment : VisualReaderFragment() {
                     if (!isSearchViewIconified) menuSearch.expandActionView()
                 }
 
+
+                @SuppressLint("CoroutineCreationDuringComposition")
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     when (menuItem.itemId) {
 
                         R.id.search -> {
                             return true
                         }
+
                         android.R.id.home -> {
                             menuSearch.collapseActionView()
                             return true
+                        }
+
+                        R.id.switch_language -> {
+                            var isInit = true
+
+                            composeView.visibility = View.VISIBLE
+                            composeView.setContent {
+                                val bottomSheetState = rememberModalBottomSheetState(
+                                    ModalBottomSheetValue.Hidden
+                                )
+                                val coroutineScope = rememberCoroutineScope()
+                                if (isInit) {
+                                    if (!bottomSheetState.isVisible) {
+                                        coroutineScope.launch {
+                                            bottomSheetState.show()
+
+                                            composeView.visibility = View.VISIBLE
+                                            isInit = false
+                                        }
+                                    }
+                                }
+
+
+                                MyModalBottomSheet(
+                                    bottomSheetState,
+                                    booksList = booksList,
+                                    modifier = Modifier.systemBarsPadding()
+                                ) {
+                                    coroutineScope.launch {
+                                        bottomSheetState.hide()
+
+                                        composeView.visibility = View.GONE
+                                    }
+                                }
+                            }
+
+
                         }
                     }
                     return false
@@ -190,6 +305,86 @@ class EpubReaderFragment : VisualReaderFragment() {
             viewLifecycleOwner
         )
     }
+
+
+    private fun handlMeEvent(event: ReaderViewModel2.Event) {
+        when (event) {
+            is ReaderViewModel2.Event.OpenPublicationError -> {
+                event.error.toUserError().show(requireActivity())
+            }
+
+            is ReaderViewModel2.Event.LaunchReader -> {
+                val intent = ReaderActivityContract().createIntent(
+                    requireContext(),
+                    event.arguments
+                )
+                startActivity(intent)
+            }
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun MyModalBottomSheet(
+        bottomSheetState: ModalBottomSheetState,
+        booksList: MutableList<Book>,
+        modifier: Modifier,
+        bookshelfViewModel: BookshelfViewModel = viewModel(),
+        onDismiss: () -> Unit,
+
+        ) {
+
+
+        ModalBottomSheetLayout(
+            modifier = modifier,
+            sheetState = bottomSheetState,
+            sheetContent = {
+                Column(
+                    modifier = Modifier,
+                ) {
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Choose Language", style = MaterialTheme.typography.h6)
+                        IconButton(onClick = { onDismiss.invoke() }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
+                        }
+                    }
+
+                    booksList.forEach {
+                        Text(text = it.langCode ?: "",
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+
+                                    activity?.finish()
+
+                                    it.id?.let { it1 -> bookshelfViewModel.openPublication(it1) }
+
+                                }
+                                .padding(vertical = 12.dp, horizontal = 24.dp)
+
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+
+                    }
+
+                }
+            }
+        ) {
+            // Empty content as we're using this Composable only for the BottomSheet
+        }
+    }
+
 
     /**
      * Will display margin labels next to page numbers in an EPUB publication with a `page-list`
@@ -253,16 +448,17 @@ class EpubReaderFragment : VisualReaderFragment() {
             }
         })
 
-        menuSearchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setOnClickListener {
-            menuSearchView.requestFocus()
-            model.cancelSearch()
-            menuSearchView.setQuery("", false)
+        menuSearchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+            .setOnClickListener {
+                menuSearchView.requestFocus()
+                model.cancelSearch()
+                menuSearchView.setQuery("", false)
 
-            (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showSoftInput(
-                this.view,
-                0
-            )
-        }
+                (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showSoftInput(
+                    this.view,
+                    0
+                )
+            }
     }
 
     private fun showSearchFragment() {
