@@ -98,19 +98,22 @@ class ChatViewModel : ViewModel() {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
 
-            val originalBookId: Long? = when (book?.title) {
-                "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
-                    59
-                }
+            val originalBookId: Long? = book?.identifier?.toLong()
 
-                "WHITE NIGHTS" -> {
-                    60
-                }
-
-                else -> {
-                    null
-                }
-            }
+//
+//                when (book?.title) {
+//                "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
+//                    59
+//                }
+//
+//                "WHITE NIGHTS" -> {
+//                    60
+//                }
+//
+//                else -> {
+//                    null
+//                }
+//            }
 
 
             try {
@@ -145,6 +148,8 @@ class ChatViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+
             }
         }
 

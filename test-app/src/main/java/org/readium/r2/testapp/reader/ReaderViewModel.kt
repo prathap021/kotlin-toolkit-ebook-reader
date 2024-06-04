@@ -10,6 +10,8 @@ package org.readium.r2.testapp.reader
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

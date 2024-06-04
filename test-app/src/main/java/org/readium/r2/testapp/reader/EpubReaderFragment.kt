@@ -52,6 +52,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
@@ -96,9 +97,15 @@ class EpubReaderFragment : VisualReaderFragment() {
 
     private val scope = CoroutineScope(newSingleThreadContext("name"))
 
+    lateinit var viewModel: ReaderViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        ViewModelProvider(requireActivity())[ReaderViewModel::class.java].let {
+            viewModel = it
+        }
+
         if (savedInstanceState != null) {
             isSearchViewIconified = savedInstanceState.getBoolean(IS_SEARCH_VIEW_ICONIFIED)
         }
@@ -307,23 +314,6 @@ class EpubReaderFragment : VisualReaderFragment() {
     }
 
 
-    private fun handlMeEvent(event: ReaderViewModel2.Event) {
-        when (event) {
-            is ReaderViewModel2.Event.OpenPublicationError -> {
-                event.error.toUserError().show(requireActivity())
-            }
-
-            is ReaderViewModel2.Event.LaunchReader -> {
-                val intent = ReaderActivityContract().createIntent(
-                    requireContext(),
-                    event.arguments
-                )
-                startActivity(intent)
-            }
-        }
-    }
-
-
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun MyModalBottomSheet(
@@ -374,8 +364,7 @@ class EpubReaderFragment : VisualReaderFragment() {
                                     val bookId: Long? = it.id
 
                                     if (bookId != null) {
-                                        val argument =
-                                            viewModel.openBook(requireContext(), bookId)
+                                        val argument = viewModel.openBook(requireContext(), bookId)
                                         Log.e("intent", argument.toString())
 
 
