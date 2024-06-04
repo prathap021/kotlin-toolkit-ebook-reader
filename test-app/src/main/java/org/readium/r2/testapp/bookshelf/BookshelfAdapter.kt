@@ -38,6 +38,7 @@ class BookshelfAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val book = getItem(position)
+        print("your")
 
         viewHolder.bind(book)
     }

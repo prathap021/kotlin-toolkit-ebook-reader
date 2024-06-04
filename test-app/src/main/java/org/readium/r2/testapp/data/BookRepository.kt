@@ -7,8 +7,15 @@
 package org.readium.r2.testapp.data
 
 import androidx.annotation.ColorInt
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import java.io.File
+import java.util.Locale
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.joda.time.DateTime
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
@@ -20,11 +27,27 @@ import org.readium.r2.testapp.data.model.Book
 import org.readium.r2.testapp.data.model.Bookmark
 import org.readium.r2.testapp.data.model.Highlight
 import org.readium.r2.testapp.utils.extensions.readium.authorName
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 class BookRepository(
     private val booksDao: BooksDao
 ) {
     fun books(): Flow<List<Book>> = booksDao.getAllBooks()
+
+
+//         fun books(): Flow<List<Book>> {
+//          val appLangCode= Locale.getDefault().getLanguage()
+//            val flowBooks:Flow<List<Book>> = booksDao.getAllBooks()
+//             return booksDao.getAllBooks()
+//
+//      }
+
+
+
 
     suspend fun get(id: Long) = booksDao.get(id)
 
