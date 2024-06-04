@@ -73,6 +73,29 @@ class ReaderViewModel(
     private val _book = MutableLiveData<Book>()
     val book: LiveData<Book> get() = _book
 
+
+    fun openBook(context: Context, bookId: Long, ): ReaderActivityContract.Arguments? {
+         var arguments:  ReaderActivityContract.Arguments? = null
+        viewModelScope.launch {
+            readerRepository
+                .open(bookId!!)
+                .onFailure {
+                    Toast.makeText(context,"Book open failed", Toast.LENGTH_SHORT).show()
+                    Log.e("intent", "Book open failed")
+                }
+                .onSuccess {
+                     arguments = ReaderActivityContract.Arguments(bookId)
+                    Log.e("intent", "Book open failed")
+
+                }
+        }
+
+        return arguments
+    }
+
+
+
+
     fun getBook(context:Context, bookId: Long){
 
             val bookRepository : BookRepository

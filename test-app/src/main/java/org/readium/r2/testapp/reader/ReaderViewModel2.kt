@@ -1,45 +1,34 @@
 package org.readium.r2.testapp.reader
 
-import android.util.Log
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import org.readium.r2.testapp.Application
-import org.readium.r2.testapp.bookshelf.BookshelfViewModel
-import org.readium.r2.testapp.utils.EventChannel
 
-class ReaderViewModel2 (application: Application): AndroidViewModel(application){
+
+
+class ReaderViewModel2(application: android.app.Application) : AndroidViewModel(application){
     private val app get() = getApplication<org.readium.r2.testapp.Application>()
-    val channel = EventChannel(Channel<ReaderViewModel2.Event>(Channel.BUFFERED), viewModelScope)
-
-    fun openPublication(
-        bookId: Long
-    ) {
-
-        Log.e("readersaba", bookId.toString())
+    fun openBook(context: Context, bookId: Long, ):Intent{
+        var intent = Intent()
         viewModelScope.launch {
             app.readerRepository
-                .open(bookId)
+                .open(bookId!!)
                 .onFailure {
-                    channel.send(Event.OpenPublicationError(it))
+                    Toast.makeText(context,"Book open failed", Toast.LENGTH_SHORT).show()
                 }
                 .onSuccess {
                     val arguments = ReaderActivityContract.Arguments(bookId)
-                    channel.send(Event.LaunchReader(arguments))
+                     intent= ReaderActivityContract().createIntent(
+                        context,
+                        arguments
+                    )
+
                 }
         }
-    }
-
-    sealed class Event {
-
-        class OpenPublicationError(
-            val error: OpeningError
-        ) : Event()
-
-        class LaunchReader(
-            val arguments: ReaderActivityContract.Arguments
-        ) : Event()
+        return intent
     }
 
 }

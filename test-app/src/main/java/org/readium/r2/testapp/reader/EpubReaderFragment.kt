@@ -368,7 +368,26 @@ class EpubReaderFragment : VisualReaderFragment() {
 
                                     activity?.finish()
 
-                                    it.id?.let { it1 -> bookshelfViewModel.openPublication(it1) }
+                                    // it.id?.let { it1 -> bookshelfViewModel.openPublication(it1) }
+
+
+                                    val bookId: Long? = it.id
+
+                                    if (bookId != null) {
+                                        val argument =
+                                            viewModel.openBook(requireContext(), bookId)
+                                        Log.e("intent", argument.toString())
+
+
+                                        val intent = ReaderActivityContract().createIntent(
+                                            requireContext(),
+                                            argument!!
+                                        )
+                                        startActivity(intent)
+
+                                        Log.e("intent", intent.toString())
+                                    }
+
 
                                 }
                                 .padding(vertical = 12.dp, horizontal = 24.dp)
