@@ -7,6 +7,7 @@
 package org.readium.r2.testapp.data
 
 import androidx.annotation.ColorInt
+import androidx.compose.ui.text.intl.Locale
 import java.io.File
 import kotlinx.coroutines.flow.Flow
 import org.intellij.lang.annotations.Identifier
@@ -25,7 +26,7 @@ import org.readium.r2.testapp.utils.extensions.readium.authorName
 class BookRepository(
     private val booksDao: BooksDao
 ) {
-    fun books(): Flow<List<Book>> = booksDao.getAllBooks()
+    fun books(): Flow<List<Book>> = booksDao.getAllBooks(java.util.Locale.getDefault().language)
 
     suspend fun get(id: Long) = booksDao.get(id)
 
@@ -95,9 +96,12 @@ class BookRepository(
             progression = "{}",
             cover = cover.path ,
             langCode = publication.metadata.language?.code
-
-
         )
+
+        //if (dbbook = booksDao.get(iden, lan))
+        /*book.id = dbbook.id
+
+        if ()*/
         return booksDao.insertBook(book)
     }
 

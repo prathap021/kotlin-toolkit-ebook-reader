@@ -85,8 +85,7 @@ abstract class BaseReaderFragment : Fragment() {
             book?.let {
 //                Toast.makeText(context, book.toString(), Toast.LENGTH_LONG).show()
                 if (
-                    book.title == "Indus Valley Civilization – A Land of the ancient Dravidians" ||
-                    book.identifier == "60"
+                    book.identifier == "60" || book.identifier == "59"
                 ) {
                     context?.startActivity(
                         Intent(context, ChatActivity::class.java).apply {

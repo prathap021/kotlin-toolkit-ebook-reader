@@ -98,25 +98,27 @@ class ChatViewModel : ViewModel() {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
 
-            val originalBookId: Long? = book?.identifier?.toLong()
 
-//
-//                when (book?.title) {
-//                "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
-//                    59
-//                }
-//
-//                "WHITE NIGHTS" -> {
-//                    60
-//                }
-//
-//                else -> {
-//                    null
-//                }
-//            }
 
 
             try {
+                val originalBookId: Long? = book?.identifier?.toLong()
+
+
+//                when (book?.title) {
+//                    "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
+//                        59
+//                    }
+//
+//                    "WHITE NIGHTS" -> {
+//                        60
+//                    }
+//
+//                    else -> {
+//                        null
+//                    }
+//
+//                }
 
                 if (NetworkUtils.isNetworkAvailable(context)) {
 

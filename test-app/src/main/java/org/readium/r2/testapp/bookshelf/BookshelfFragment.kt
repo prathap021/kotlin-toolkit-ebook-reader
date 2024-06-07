@@ -9,10 +9,12 @@ package org.readium.r2.testapp.bookshelf
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +40,7 @@ import org.readium.r2.testapp.data.model.Book
 import org.readium.r2.testapp.databinding.FragmentBookshelfBinding
 import org.readium.r2.testapp.opds.GridAutoFitLayoutManager
 import org.readium.r2.testapp.reader.ReaderActivityContract
+import org.readium.r2.testapp.utils.AppUtil
 import org.readium.r2.testapp.utils.viewLifecycle
 
 
@@ -85,9 +88,9 @@ class BookshelfFragment : Fragment() {
             onBookClick = { book ->
                 book.id?.let {
 //                    val locale = applicationContext.getCurrentLocale()
-                    Toast.makeText(context, "Lang details: ${book.langCode}", Toast.LENGTH_LONG).show()
-                   println("book details is " +book.langCode)
-//                    println("App language is --->"+locale)
+//                    Toast.makeText(context, "Lang details: ${book.langCode}", Toast.LENGTH_LONG).show()
+//                   println("book details is " +book.langCode)
+////                    println("App language is --->"+locale)
 
 
                     bookshelfViewModel.openPublication(it)
@@ -122,13 +125,18 @@ class BookshelfFragment : Fragment() {
                 )
             )
         }
+        Log.e("APP LANG", "App lang change onViewCreated ${Locale.getDefault().language}")
         lifecycleScope.launch {
+            Log.e("APP LANG", "App lang change lifeScope ${Locale.getDefault().language}")
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                bookshelfViewModel.books.collectLatest {
+                Log.e("APP LANG", "App lang change started ${Locale.getDefault().language}")
+                bookshelfViewModel.getBooks(AppUtil.getAppLanguage()).collectLatest {
                     bookshelfAdapter.submitList(it)
                 }
             }
         }
+
+        //bookshelfViewModel.books
 
         binding.bookshelfAddBookFab.setOnClickListener {
             var selected = 0
@@ -164,6 +172,12 @@ class BookshelfFragment : Fragment() {
 //            this.resources.configuration.locale;
 //        }
 //    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.e("APP LANG", "App lang change CHANGE ${Locale.getDefault().language} vs ${newConfig.locale?.language}")
+       // bookshelfViewModel.books
+    }
 
 
     private fun askForRemoteUrl() {

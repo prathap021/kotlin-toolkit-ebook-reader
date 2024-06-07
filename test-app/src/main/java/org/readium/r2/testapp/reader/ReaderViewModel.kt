@@ -48,6 +48,7 @@ import org.readium.r2.shared.util.Url
 import org.readium.r2.shared.util.data.ReadError
 import org.readium.r2.testapp.Application
 import org.readium.r2.testapp.R
+import org.readium.r2.testapp.bookshelf.BookshelfViewModel
 import org.readium.r2.testapp.data.BookRepository
 import org.readium.r2.testapp.data.db.AppDatabase
 import org.readium.r2.testapp.data.model.Book
@@ -76,24 +77,44 @@ class ReaderViewModel(
     val book: LiveData<Book> get() = _book
 
 
-    fun openBook(context: Context, bookId: Long, ): ReaderActivityContract.Arguments? {
-         var arguments:  ReaderActivityContract.Arguments? = null
+    val channel = EventChannel(Channel<BookshelfViewModel.Event>(Channel.BUFFERED), viewModelScope)
+
+    fun openPublication(
+        bookId: Long
+    ) {
+
+        Log.e("readersaba", bookId.toString())
         viewModelScope.launch {
             readerRepository
-                .open(bookId!!)
+                .open(bookId)
                 .onFailure {
-                    Toast.makeText(context,"Book open failed", Toast.LENGTH_SHORT).show()
-                    Log.e("intent", "Book open failed")
+                    channel.send(BookshelfViewModel.Event.OpenPublicationError(it))
                 }
                 .onSuccess {
-                     arguments = ReaderActivityContract.Arguments(bookId)
-                    Log.e("intent", "Book open failed")
-
+                    val arguments = ReaderActivityContract.Arguments(bookId)
+                    channel.send(BookshelfViewModel.Event.LaunchReader(arguments))
                 }
         }
-
-        return arguments
     }
+
+
+//    fun openBook(context: Context, bookId: Long, ): ReaderActivityContract.Arguments? {
+//         var arguments:  ReaderActivityContract.Arguments? = null
+//        viewModelScope.launch {
+//            readerRepository
+//                .open(bookId!!)
+//                .onFailure {
+//                    Toast.makeText(context,"Book open failed", Toast.LENGTH_SHORT).show()
+//                    Log.e("intent", "Book open failed")
+//                }
+//                .onSuccess {
+//                     arguments = ReaderActivityContract.Arguments(bookId)
+//                    Log.e("intent", "Book open failed")
+//
+//                }
+//        }
+//
+//    }
 
 
 

@@ -32,8 +32,9 @@
 
     <item
         android:id="@+id/switch_language"
-        android:icon="@drawable/language_switch"
-        android:title="@string/epubactivity_chat"
+        android:icon="@drawable/switch_language"
+        android:title="@string/change_language"
+        app:iconTint="?attr/colorControlNormal"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction" />
 

@@ -47,8 +47,8 @@ interface BooksDao {
      * Retrieve all books
      * @return List of books as Flow
      */
-    @Query("SELECT * FROM " + Book.TABLE_NAME + " ORDER BY " + Book.CREATION_DATE + " desc")
-    fun getAllBooks(): Flow<List<Book>>
+    @Query("SELECT * FROM " + Book.TABLE_NAME + " WHERE "+ Book.LANG_CODE + " = :langCode ORDER BY " + Book.CREATION_DATE + " desc")
+    fun getAllBooks(langCode: String): Flow<List<Book>>
 
     /**
      * Retrieve all bookmarks for a specific book

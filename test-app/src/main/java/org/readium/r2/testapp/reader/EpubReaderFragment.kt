@@ -57,6 +57,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -80,9 +81,11 @@ import org.readium.r2.testapp.R
 import org.readium.r2.testapp.bookshelf.BookshelfViewModel
 import org.readium.r2.testapp.data.BookRepository
 import org.readium.r2.testapp.data.model.Book
+import org.readium.r2.testapp.databinding.FragmentBookshelfBinding
 import org.readium.r2.testapp.reader.preferences.UserPreferencesViewModel
 import org.readium.r2.testapp.search.SearchFragment
 import org.readium.r2.testapp.utils.EventChannel
+import org.readium.r2.testapp.utils.viewLifecycle
 import timber.log.Timber
 
 @OptIn(ExperimentalReadiumApi::class)
@@ -98,7 +101,6 @@ class EpubReaderFragment : VisualReaderFragment() {
     private val scope = CoroutineScope(newSingleThreadContext("name"))
 
     lateinit var viewModel: ReaderViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -208,6 +210,10 @@ class EpubReaderFragment : VisualReaderFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        viewModel.channel.receive(viewLifecycleOwner) { handleEvent(it) }
+
+
         @Suppress("Unchecked_cast")
         (model.settings as UserPreferencesViewModel<EpubSettings, EpubPreferences>)
             .bind(navigator, viewLifecycleOwner)
@@ -234,7 +240,7 @@ class EpubReaderFragment : VisualReaderFragment() {
                 }?.collectLatest {
                     booksList.clear()
                     booksList.addAll(
-                        it
+                        it.distinctBy { it.langCode }
                     )
                 }
             }
@@ -313,6 +319,22 @@ class EpubReaderFragment : VisualReaderFragment() {
         )
     }
 
+    private fun handleEvent(event: BookshelfViewModel.Event) {
+        when (event) {
+            is BookshelfViewModel.Event.OpenPublicationError -> {
+                event.error.toUserError().show(requireActivity())
+            }
+
+            is BookshelfViewModel.Event.LaunchReader -> {
+                val intent = ReaderActivityContract().createIntent(
+                    requireContext(),
+                    event.arguments
+                )
+                activity?.finish()
+                startActivity(intent)
+            }
+        }
+    }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
@@ -348,7 +370,7 @@ class EpubReaderFragment : VisualReaderFragment() {
                     }
 
                     booksList.forEach {
-                        Text(text = it.langCode ?: "",
+                        Text(text = it.langCode?.let { it1 -> Locale(it1).displayLanguage } ?: "Unknown Language",
                             fontSize = 16.sp,
                             lineHeight = 20.sp,
 
@@ -356,7 +378,7 @@ class EpubReaderFragment : VisualReaderFragment() {
                                 .fillMaxWidth()
                                 .clickable {
 
-                                    activity?.finish()
+                                    //activity?.finish()
 
                                     // it.id?.let { it1 -> bookshelfViewModel.openPublication(it1) }
 
@@ -364,17 +386,21 @@ class EpubReaderFragment : VisualReaderFragment() {
                                     val bookId: Long? = it.id
 
                                     if (bookId != null) {
-                                        val argument = viewModel.openBook(requireContext(), bookId)
-                                        Log.e("intent", argument.toString())
+
+                                        viewModel.openPublication(bookId)
 
 
-                                        val intent = ReaderActivityContract().createIntent(
-                                            requireContext(),
-                                            argument!!
-                                        )
-                                        startActivity(intent)
-
-                                        Log.e("intent", intent.toString())
+//                                        val argument = viewModel.openBook(requireContext(), bookId)
+//                                        Log.e("intent", argument.toString())
+//
+//
+//                                        val intent = ReaderActivityContract().createIntent(
+//                                            requireContext(),
+//                                            argument!!
+//                                        )
+//                                        startActivity(intent)
+//
+//                                        Log.e("intent", intent.toString())
                                     }
 
 
