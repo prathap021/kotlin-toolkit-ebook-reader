@@ -30,6 +30,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,6 +54,7 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"))
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     packaging {
