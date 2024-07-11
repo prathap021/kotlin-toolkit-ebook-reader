@@ -84,17 +84,19 @@ abstract class BaseReaderFragment : Fragment() {
         model.book.observe(viewLifecycleOwner, Observer { book ->
             book?.let {
 //                Toast.makeText(context, book.toString(), Toast.LENGTH_LONG).show()
-                if (
-                    book.identifier == "60" || book.identifier == "59"
-                ) {
-                    context?.startActivity(
-                        Intent(context, ChatActivity::class.java).apply {
-                            putExtra("bookId", book.id.toString())
-                        }
-                    )
-                } else {
-                    Toast.makeText(context, "Chat not available", Toast.LENGTH_SHORT).show()
-                }
+//                if (
+//                    book.identifier == "60" || book.identifier == "59"
+//                ) {
+//
+//                } else {
+//                    Toast.makeText(context, "Chat not available", Toast.LENGTH_SHORT).show()
+//                }
+
+                context?.startActivity(
+                    Intent(context, ChatActivity::class.java).apply {
+                        putExtra("bookId", book.id.toString())
+                    }
+                )
             }
         })
 

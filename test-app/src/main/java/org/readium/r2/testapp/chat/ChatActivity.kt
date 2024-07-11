@@ -1,5 +1,6 @@
 package org.readium.r2.testapp.chat
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,12 +32,14 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,11 +93,19 @@ class ChatActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
 
     val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getBookDetails(context, bookId)
+    }
+
+    val chatAvailableState by viewModel.chatAvailableState.collectAsState()
+
+
     val activity = context as Activity
 
 
@@ -134,6 +145,7 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
             var typedMessage by remember {
                 mutableStateOf("")
             }
+            if(chatAvailableState is ChatAvailableState.Success)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -176,7 +188,7 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
 
                 }, modifier = Modifier.weight(0.1f)) {
                     Icon(
-                        imageVector = if(isLoading) Icons.Default.Stop else Icons.Default.Send,
+                        imageVector = if (isLoading) Icons.Default.Stop else Icons.Default.Send,
                         contentDescription = "Send",
                     )
                 }
@@ -184,36 +196,79 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
         }
     ) { innerPadding ->
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            state = listState
-        ) {
-            items(messages) {
-                ChatBubble(chatItem = it, modifier = Modifier)
-            }
-            if (isLoading) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 6.dp),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        // Typing GIF
-                        AnimatedPreloader(modifier = Modifier.size(50.dp))                        /*AsyncImage(
+
+        when (chatAvailableState) {
+            is ChatAvailableState.Success -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    state = listState
+                ) {
+                    items(messages) {
+                        ChatBubble(chatItem = it, modifier = Modifier)
+                    }
+                    if (isLoading) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                // Typing GIF
+                                AnimatedPreloader(modifier = Modifier.size(50.dp))                        /*AsyncImage(
                             model = R.drawable.loading3,
                             contentDescription = "typing..",
                             imageLoader = imageLoader,
                             modifier = Modifier.size(40.dp)
                         )
 */
+                            }
+                        }
                     }
                 }
             }
+
+            is ChatAvailableState.Failed -> {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding).padding(24.dp)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Text((chatAvailableState as ChatAvailableState.Failed).message)
+                }
+            }
+
+            is ChatAvailableState.Exception -> {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding).padding(24.dp)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text((chatAvailableState as ChatAvailableState.Exception).message)
+                }
+
+            }
+
+            is ChatAvailableState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding).padding(24.dp)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
         }
+
+
     }
 }
 

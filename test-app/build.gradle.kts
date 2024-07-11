@@ -9,6 +9,8 @@ plugins {
     kotlin("android")
     kotlin("plugin.parcelize")
     alias(libs.plugins.ksp)
+    kotlin("plugin.serialization") version "2.0.0"
+
 }
 
 android {

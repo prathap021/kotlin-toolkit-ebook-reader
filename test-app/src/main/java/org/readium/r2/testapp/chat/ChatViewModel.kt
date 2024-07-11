@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,6 +25,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -32,6 +34,12 @@ interface JokeApiService {
     suspend fun getRandomJoke(
         @Query("file_id") bookId: Long?, @Query("chat_text") message: String
     ): Response<Answer>
+
+    @GET("ai_chat/book-primary/{id}/")
+    suspend fun getBookDetails(
+        @Path("id") bookId: Long?
+    ): Response<BookDetail>
+
 }
 
 
@@ -73,6 +81,56 @@ data class Answer(
     val answer: String? = null
 )
 
+@Serializable
+data class BookDetail(
+    val id: Long? = null,
+    val uid: String? = null,
+    val user: Long? = null,
+
+    @SerialName("book_title")
+    val bookTitle: String? = null,
+
+    @SerialName("book_subtitle")
+    val bookSubtitle: String? = null,
+
+    val publisher: String? = null,
+
+    @SerialName("publication_date")
+    val publicationDate: String? = null,
+
+    val language: Long? = null,
+    val author: String? = null,
+
+    @SerialName("isbn_13")
+    val isbn13: String? = null,
+
+    @SerialName("isbn_10")
+    val isbn10: String? = null,
+
+    val subject: String? = null,
+
+    @SerialName("source_file")
+    val sourceFile: String? = null,
+
+    @SerialName("source_file_name")
+    val sourceFileName: String? = null,
+
+    @SerialName("cover_image")
+    val coverImage: String? = null,
+
+    @SerialName("cover_thumbnail")
+    val coverThumbnail: String? = null,
+
+    @SerialName("is_show")
+    val isShow: Boolean? = null,
+
+    @SerialName("about_book")
+    val aboutBook: String? = null,
+
+    @SerialName("about_author")
+    val aboutAuthor: String? = null
+)
+
 class ChatViewModel : ViewModel() {
 
     private var _messages = MutableStateFlow<List<ChatItem>>(emptyList())
@@ -80,6 +138,13 @@ class ChatViewModel : ViewModel() {
 
     private var _isLoading = MutableStateFlow<Boolean>(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private var _chatAvailableLoading = MutableStateFlow<Boolean>(false)
+    val chatAvailableLoading: StateFlow<Boolean> = _chatAvailableLoading.asStateFlow()
+
+    private var _chatAvailableState:MutableStateFlow<ChatAvailableState> = MutableStateFlow(ChatAvailableState.Loading)
+    val chatAvailableState : StateFlow<ChatAvailableState> = _chatAvailableState
+
 
     fun sendMessage(
         context: Context, userMessage: String, scrollToEnd: () -> Unit, bookId: String?
@@ -156,5 +221,71 @@ class ChatViewModel : ViewModel() {
         }
 
     }
+
+
+    fun getBookDetails(
+        context: Context, bookId: String?
+
+    ) {
+        val bookRepository: BookRepository
+
+        val database = AppDatabase.getDatabase(context)
+
+        bookRepository = BookRepository(database.booksDao())
+
+
+
+        viewModelScope.launch {
+
+            val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
+            try {
+                val originalBookId: Long? = book?.identifier?.toLong()
+
+
+                if (NetworkUtils.isNetworkAvailable(context)) {
+
+                    _chatAvailableLoading.value = true
+
+
+                    val response = RetrofitInstance.api.getBookDetails(originalBookId)
+
+                    if (response.isSuccessful) {
+                            _chatAvailableState.value = ChatAvailableState.Success(message = "Chat Available for this book!")
+
+                        _chatAvailableLoading.value = false
+                    }else {
+                        _chatAvailableState.value = ChatAvailableState.Failed(message = "Chat Not Available for this book!")
+
+                    }
+
+                } else {
+                    _chatAvailableState.value = ChatAvailableState.Failed(message = "Check your internet connection")
+
+                    Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT)
+                        .show()
+                    _chatAvailableLoading.value = false
+
+                }
+
+
+            } catch (e: Exception) {
+                _chatAvailableState.value = ChatAvailableState.Exception(message = "Chat Not Available for this book!")
+
+//                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                _chatAvailableLoading.value = false
+
+            }
+        }
+    }
+
+
+}
+
+
+sealed interface ChatAvailableState {
+    object Loading : ChatAvailableState
+    data class Success(val message: String=""): ChatAvailableState
+    data class Failed(val message: String="") : ChatAvailableState
+    data class Exception(val message: String=""): ChatAvailableState
 
 }
