@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import org.readium.r2.testapp.chat.ui.theme.ReadiumTheme
+import org.readium.r2.testapp.chat.ui.theme.ChaiReaderTheme
 import android.app.Activity
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -15,7 +15,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,17 +47,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -70,7 +66,6 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.launch
 import org.readium.r2.testapp.R
-import org.readium.r2.testapp.data.db.AppDatabase
 
 data class ChatItem(
     var message: String,
@@ -82,12 +77,10 @@ class ChatActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ReadiumTheme {
+            ChaiReaderTheme {
                 val bookId: String? = intent.getStringExtra("bookId")
                 val viewModel: ChatViewModel = viewModel()
                 ChatScreen(bookId = bookId, viewModel = viewModel)
-
-
             }
         }
     }
@@ -218,13 +211,7 @@ fun ChatScreen(bookId: String?, viewModel: ChatViewModel) {
                                 horizontalArrangement = Arrangement.Start
                             ) {
                                 // Typing GIF
-                                AnimatedPreloader(modifier = Modifier.size(50.dp))                        /*AsyncImage(
-                            model = R.drawable.loading3,
-                            contentDescription = "typing..",
-                            imageLoader = imageLoader,
-                            modifier = Modifier.size(40.dp)
-                        )
-*/
+                                AnimatedPreloader(modifier = Modifier.size(50.dp))
                             }
                         }
                     }
@@ -334,35 +321,9 @@ fun ChatBubble(chatItem: ChatItem, modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    ReadiumTheme {
+    ChaiReaderTheme {
         ChatScreen(viewModel = viewModel(), bookId = "")
     }
-}
-
-
-@Composable
-fun GifImage(
-    modifier: Modifier = Modifier,
-    id: Int,
-) {
-    val context = LocalContext.current
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            if (SDK_INT >= 28) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
-        }
-        .build()
-
-    Image(
-        painter = rememberAsyncImagePainter(
-            ImageRequest.Builder(context).data(data = id).build(), imageLoader = imageLoader
-        ),
-        contentDescription = null,
-        modifier = modifier.fillMaxWidth(),
-    )
 }
 
 @Composable

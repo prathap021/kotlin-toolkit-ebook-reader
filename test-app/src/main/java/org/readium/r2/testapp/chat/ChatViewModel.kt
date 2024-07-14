@@ -2,15 +2,11 @@ package org.readium.r2.testapp.chat
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,9 +25,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-interface JokeApiService {
+interface BookApiService {
     @GET("/ai_chat/chat-with-pdf")
-    suspend fun getRandomJoke(
+    suspend fun getAnswer(
         @Query("file_id") bookId: Long?, @Query("chat_text") message: String
     ): Response<Answer>
 
@@ -41,7 +37,6 @@ interface JokeApiService {
     ): Response<BookDetail>
 
 }
-
 
 object RetrofitInstance {
     private val retrofit by lazy {
@@ -66,11 +61,10 @@ object RetrofitInstance {
 
     }
 
-    val api: JokeApiService by lazy {
-        retrofit.create(JokeApiService::class.java)
+    val api: BookApiService by lazy {
+        retrofit.create(BookApiService::class.java)
     }
 }
-
 
 @Serializable
 data class Answer(
@@ -131,6 +125,14 @@ data class BookDetail(
     val aboutAuthor: String? = null
 )
 
+sealed interface ChatAvailableState {
+    object Loading : ChatAvailableState
+    data class Success(val message: String = "") : ChatAvailableState
+    data class Failed(val message: String = "") : ChatAvailableState
+    data class Exception(val message: String = "") : ChatAvailableState
+}
+
+
 class ChatViewModel : ViewModel() {
 
     private var _messages = MutableStateFlow<List<ChatItem>>(emptyList())
@@ -142,48 +144,38 @@ class ChatViewModel : ViewModel() {
     private var _chatAvailableLoading = MutableStateFlow<Boolean>(false)
     val chatAvailableLoading: StateFlow<Boolean> = _chatAvailableLoading.asStateFlow()
 
-    private var _chatAvailableState:MutableStateFlow<ChatAvailableState> = MutableStateFlow(ChatAvailableState.Loading)
-    val chatAvailableState : StateFlow<ChatAvailableState> = _chatAvailableState
+    private var _chatAvailableState: MutableStateFlow<ChatAvailableState> =
+        MutableStateFlow(ChatAvailableState.Loading)
+    val chatAvailableState: StateFlow<ChatAvailableState> = _chatAvailableState
 
 
     fun sendMessage(
         context: Context, userMessage: String, scrollToEnd: () -> Unit, bookId: String?
     ) {
-
-
         val bookRepository: BookRepository
-
         val database = AppDatabase.getDatabase(context)
-
         bookRepository = BookRepository(database.booksDao())
-
-
-
         viewModelScope.launch {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
 
-
-
-
             try {
                 val originalBookId: Long? = book?.identifier?.toLong()
+                /*
+                 when (book?.title) {
+                     "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
+                         59
+                     }
 
+                     "WHITE NIGHTS" -> {
+                         60
+                     }
 
-//                when (book?.title) {
-//                    "Indus Valley Civilization – A Land of the ancient Dravidians" -> {
-//                        59
-//                    }
-//
-//                    "WHITE NIGHTS" -> {
-//                        60
-//                    }
-//
-//                    else -> {
-//                        null
-//                    }
-//
-//                }
+                     else -> {
+                         null
+                     }
+
+                 }*/
 
                 if (NetworkUtils.isNetworkAvailable(context)) {
 
@@ -193,7 +185,7 @@ class ChatViewModel : ViewModel() {
                         _messages.value + ChatItem(message = userMessage, isQuestion = true)
                     scrollToEnd.invoke()
 
-                    val response = RetrofitInstance.api.getRandomJoke(originalBookId, userMessage)
+                    val response = RetrofitInstance.api.getAnswer(originalBookId, userMessage)
 
                     if (response.isSuccessful) {
                         response.body()?.let {
@@ -225,16 +217,10 @@ class ChatViewModel : ViewModel() {
 
     fun getBookDetails(
         context: Context, bookId: String?
-
     ) {
         val bookRepository: BookRepository
-
         val database = AppDatabase.getDatabase(context)
-
         bookRepository = BookRepository(database.booksDao())
-
-
-
         viewModelScope.launch {
 
             val book: Book? = bookId?.toLong()?.let { bookRepository.get(it) }
@@ -250,16 +236,19 @@ class ChatViewModel : ViewModel() {
                     val response = RetrofitInstance.api.getBookDetails(originalBookId)
 
                     if (response.isSuccessful) {
-                            _chatAvailableState.value = ChatAvailableState.Success(message = "Chat Available for this book!")
+                        _chatAvailableState.value =
+                            ChatAvailableState.Success(message = "Chat Available for this book!")
 
                         _chatAvailableLoading.value = false
-                    }else {
-                        _chatAvailableState.value = ChatAvailableState.Failed(message = "Chat Not Available for this book!")
+                    } else {
+                        _chatAvailableState.value =
+                            ChatAvailableState.Failed(message = "Chat Not Available for this book!")
 
                     }
 
                 } else {
-                    _chatAvailableState.value = ChatAvailableState.Failed(message = "Check your internet connection")
+                    _chatAvailableState.value =
+                        ChatAvailableState.Failed(message = "Check your internet connection")
 
                     Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT)
                         .show()
@@ -269,7 +258,8 @@ class ChatViewModel : ViewModel() {
 
 
             } catch (e: Exception) {
-                _chatAvailableState.value = ChatAvailableState.Exception(message = "Chat Not Available for this book!")
+                _chatAvailableState.value =
+                    ChatAvailableState.Exception(message = "Chat Not Available for this book!")
 
 //                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
                 _chatAvailableLoading.value = false
@@ -282,10 +272,3 @@ class ChatViewModel : ViewModel() {
 }
 
 
-sealed interface ChatAvailableState {
-    object Loading : ChatAvailableState
-    data class Success(val message: String=""): ChatAvailableState
-    data class Failed(val message: String="") : ChatAvailableState
-    data class Exception(val message: String=""): ChatAvailableState
-
-}

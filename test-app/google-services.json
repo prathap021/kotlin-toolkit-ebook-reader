@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "896963127866",
+    "project_id": "chaireader-3c1d6",
+    "storage_bucket": "chaireader-3c1d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896963127866:android:47fdc76bfbd91d2894a303",
+        "android_client_info": {
+          "package_name": "org.readium.r2reader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjjJ3ikuTDVVkFryCRbGM--6roAnBsL78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

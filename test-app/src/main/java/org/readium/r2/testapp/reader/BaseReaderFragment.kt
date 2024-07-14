@@ -83,15 +83,6 @@ abstract class BaseReaderFragment : Fragment() {
 
         model.book.observe(viewLifecycleOwner, Observer { book ->
             book?.let {
-//                Toast.makeText(context, book.toString(), Toast.LENGTH_LONG).show()
-//                if (
-//                    book.identifier == "60" || book.identifier == "59"
-//                ) {
-//
-//                } else {
-//                    Toast.makeText(context, "Chat not available", Toast.LENGTH_SHORT).show()
-//                }
-
                 context?.startActivity(
                     Intent(context, ChatActivity::class.java).apply {
                         putExtra("bookId", book.id.toString())
@@ -142,24 +133,6 @@ abstract class BaseReaderFragment : Fragment() {
                             val bookId = model.readerInitData.bookId
 
                             model.getBook(requireContext(), bookId)
-
-
-//                            model.book.observe(viewLifecycleOwner, Observer { book ->
-//                                Toast.makeText(context, book.toString(), Toast.LENGTH_LONG).show()
-//
-//                                if(book.title == "Indus Valley Civilization – A Land of the ancient Dravidians"){
-//                                    context?.startActivity(
-//                                        Intent(context, ChatActivity::class.java).apply {
-//                                            putExtra("bookId", bookId.toString())
-//                                        }
-//                                    )
-//                                }else{
-//                                    Toast.makeText(context, "Chat not available", Toast.LENGTH_SHORT).show()
-//                                }
-//
-//
-//                            })
-
 
                             return true
                         }
