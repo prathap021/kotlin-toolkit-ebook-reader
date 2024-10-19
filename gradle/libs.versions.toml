@@ -62,10 +62,11 @@ ksp = "1.9.22-1.0.16"
 ktlint = "11.5.1"
 
 pdfium = "1.8.2"
-pdf-viewer = "2.8.2"
+pdf-viewer = "3.2.0-beta.1"
 #noinspection GradleDependency
 picasso = "2.8"
 pspdfkit = "8.4.1"
+c-navigation-version = "2.5.0"
 
 robolectric = "4.11.1"
 
@@ -142,9 +143,11 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
 pdfium = { group = "com.github.barteksc", name = "pdfium-android", version.ref="pdfium" }
-pdf-viewer = { group = "com.github.barteksc", name ="android-pdf-viewer", version.ref="pdf-viewer" }
+pdf-viewer = { group = "com.github.mhiew", name ="android-pdf-viewer", version.ref="pdf-viewer" }
 picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "picasso" }
 pspdfkit = { group = "com.pspdfkit", name = "pspdfkit", version.ref ="pspdfkit" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref ="c-navigation-version" }
+
 
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 

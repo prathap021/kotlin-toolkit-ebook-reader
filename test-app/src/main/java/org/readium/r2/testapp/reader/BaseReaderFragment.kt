@@ -98,25 +98,25 @@ abstract class BaseReaderFragment : Fragment() {
                             model.insertBookmark(navigator.currentLocator.value)
                             return true
                         }
-                        // prathap added buy button 13-03-2024
-                        R.id.purchase -> {
-                            val context: Context = requireContext()
-
-                            context?.let { value-> launchWebBrowser(context,Uri.parse(buyUrl)) }
-                            return true
-                        }
-                        R.id.chatAi -> {
-                        // chat api working block
-
-                            return true
-                        }
-                        R.id.infoBook -> {
-                            println("book details is --> "+ model.publication
-                            +model.readerInitData)
-                            val context: Context = requireContext()
-                            showAlert(context,"book info","")
-                            return true
-                        }
+//                        // prathap added buy button 13-03-2024
+//                        R.id.purchase -> {
+//                            val context: Context = requireContext()
+//
+//                            context?.let { value-> launchWebBrowser(context,Uri.parse(buyUrl)) }
+//                            return true
+//                        }
+//                        R.id.chatAi -> {
+//                        // chat api working block
+//
+//                            return true
+//                        }
+//                        R.id.infoBook -> {
+//                            println("book details is --> "+ model.publication
+//                            +model.readerInitData)
+//                            val context: Context = requireContext()
+//                            showAlert(context,"book info","")
+//                            return true
+//                        }
                         R.id.settings -> {
                             MainPreferencesBottomSheetDialogFragment()
                                 .show(childFragmentManager, "Settings")

@@ -110,6 +110,7 @@ dependencies {
     implementation(libs.joda.time)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.jsoup)
+    implementation(libs.navigation.compose)
 
     implementation(libs.bundles.media3)
 

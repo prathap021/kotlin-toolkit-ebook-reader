@@ -125,14 +125,15 @@ public class PdfiumDocumentFragment internal constructor(
                 // navigator.
                 .apply { listener?.onConfigurePdfView(this) }
                 .defaultPage(page)
-                .onRender { _, _, _ ->
+
+              /*  .onRender { _, _, _ ->
                     if (settings.fit == Fit.WIDTH) {
                         pdfView.fitToWidth()
                         // Using `fitToWidth` often breaks the use of `defaultPage`, so we
                         // need to jump manually to the target page.
                         pdfView.jumpTo(page, false)
                     }
-                }
+                }*/
                 .onPageChange { index, _ ->
                     _pageIndex.value = convertPageIndexFromView(index)
                 }

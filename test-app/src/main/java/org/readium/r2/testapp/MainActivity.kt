@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         viewModel.channel.receive(this) { handleEvent(it) }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -63,3 +64,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+
