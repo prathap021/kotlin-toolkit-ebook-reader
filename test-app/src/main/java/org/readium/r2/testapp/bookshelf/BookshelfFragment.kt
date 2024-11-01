@@ -117,25 +117,25 @@ class BookshelfFragment : Fragment() {
             }
         }
 
-        binding.bookshelfAddBookFab.setOnClickListener {
-            var selected = 0
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.add_book))
-                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
-                    dialog.cancel()
-                }
-                .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                    when (selected) {
-                        0 -> appStoragePickerLauncher.launch("*/*")
-                        1 -> sharedStoragePickerLauncher.launch(arrayOf("*/*"))
-                        else -> askForRemoteUrl()
-                    }
-                }
-                .setSingleChoiceItems(R.array.documentSelectorArray, 0) { _, which ->
-                    selected = which
-                }
-                .show()
-        }
+//        binding.bookshelfAddBookFab.setOnClickListener {
+//            var selected = 0
+//            MaterialAlertDialogBuilder(requireContext())
+//                .setTitle(getString(R.string.add_book))
+//                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+//                    dialog.cancel()
+//                }
+//                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+//                    when (selected) {
+//                        0 -> appStoragePickerLauncher.launch("*/*")
+//                        1 -> sharedStoragePickerLauncher.launch(arrayOf("*/*"))
+//                        else -> askForRemoteUrl()
+//                    }
+//                }
+//                .setSingleChoiceItems(R.array.documentSelectorArray, 0) { _, which ->
+//                    selected = which
+//                }
+//                .show()
+//        }
     }
 
     @OptIn(DelicateReadiumApi::class)
