@@ -81,19 +81,27 @@ class CatalogFeedListFragment : Fragment() {
         if (preferences.getInt(VERSION_KEY, 0) < version) {
             preferences.edit().putInt(VERSION_KEY, version).apply()
 
+
             val oPDS2Catalog = Catalog(
-                title = "OPDS 2.0 Test Catalog",
-                href = "https://test.opds.io/2.0/home.json",
+                title = "Get My Ebook",
+                href = "https://getmyebook.in/mobile/getallbooks",
                 type = 2
             )
-            val oTBCatalog = Catalog(
-                title = "Open Textbooks Catalog",
-                href = "http://open.minitex.org/textbooks/",
-                type = 1
-            )
-
             catalogFeedListViewModel.insertCatalog(oPDS2Catalog)
-            catalogFeedListViewModel.insertCatalog(oTBCatalog)
+
+//            val oPDS2Catalog = Catalog(
+//                title = "OPDS 2.0 Test Catalog",
+//                href = "https://test.opds.io/2.0/home.json",
+//                type = 2
+//            )
+//            val oTBCatalog = Catalog(
+//                title = "Open Textbooks Catalog",
+//                href = "http://open.minitex.org/textbooks/",
+//                type = 1
+//            )
+//
+//            catalogFeedListViewModel.insertCatalog(oPDS2Catalog)
+//            catalogFeedListViewModel.insertCatalog(oTBCatalog)
         }
 
         binding.catalogFeedAddCatalogFab.setOnClickListener {
