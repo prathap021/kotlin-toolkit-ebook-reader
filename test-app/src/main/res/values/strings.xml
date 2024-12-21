@@ -18,6 +18,7 @@
 
     <string name="app_version_header">Version</string>
     <string name="app_version_label">App Version:</string>
+    <string name="app_language">App Language:</string>
     <string name="app_version">2.2.0</string>
     <string name="github_tab_label">GitHub Tag:</string>
     <string name="github_tag">2.2.0</string>

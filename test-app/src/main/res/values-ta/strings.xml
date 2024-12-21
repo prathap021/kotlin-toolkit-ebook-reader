@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--
+  Copyright 2023 Readium Foundation. All rights reserved.
+  Use of this source code is governed by the BSD-style license
+  available in the top-level LICENSE file of the project.
+-->
+
+<!--
+  Copyright 2023 Readium Foundation. All rights reserved.
+  Use of this source code is governed by the BSD-style license
+  available in the top-level LICENSE file of the project.
+-->
+
+<resources>
+    <string name="epubactivity_drm_info">டிஆர்எம் தகவல்</string>
+    <string name="epubactivity_set_bookmark">புக்மார்க்கைச் சேர்க்கவும்</string>
+    <string name="epubactivity_settings">பயனர் அமைப்புகள்</string>
+    <string name="epubactivity_book_nav_options">புத்தக வழிசெலுத்தல் மெனு</string>
+    <string name="epubactivity_read_aloud_start">உரக்கப் படியுங்கள்</string>
+    <string name="epubactivity_search">தேடு</string>
+
+    <string name="title_fragment_drm_management">டிஆர்எம் மேலாண்மை</string>
+    <string name="more_options">மேலும் விருப்பங்கள்</string>
+    <string name="popup_delete_button">நீக்கு</string>
+
+    <string name="app_version_header">பதிப்பு</string>
+    <string name="app_version_label">ஆப் பதிப்பு:</string>
+    <string name="app_language">பயன்பாட்டு மொழி:</string>
+    <string name="app_version">2.2.0</string>
+    <string name="github_tab_label">கிட்ஹப் டேக்:</string>
+    <string name="github_tag">2.2.0</string>
+
+    <string name="copyright_label">காப்புரிமை</string>
+    <string name="copyright">\@ 2019 ஐரோப்பிய டிஜிட்டல் ரீடிங் லேப்</string>
+    <string name="bsd_license_label">[BSD-3 உரிமம்]</string>
+    <string name="bsd_license_label_accessible">[பி எஸ் டி 3 உரிமம்]</string>
+    <string name="acknowledgements_label">அங்கீகாரங்கள்</string>
+    <string name="acknowledgements_french_state">பிரெஞ்சு அரசின் நிதி உதவி இல்லாமல் R2 ரீடர் உருவாக்கப்பட்டிருக்காது.</string>
+    <string name="catalog_list_more">மேலும்</string>
+    <string name="catalog_detail_download_button">பதிவிறக்கவும்</string>
+
+
+    <!-- Accessibility -->
+
+    <string name="drm_information_header">தகவல்</string>
+    <string name="drm_label_license_type">உரிமம் வகை</string>
+    <string name="drm_label_state">மாநிலம்</string>
+    <string name="drm_label_provider">வழங்குபவர்</string>
+    <string name="drm_label_issued">வெளியிடப்பட்டது</string>
+    <string name="drm_label_updated">புதுப்பிக்கப்பட்டது</string>
+    <string name="drm_label_rights">உரிமைகள்</string>
+    <string name="drm_label_prints_left">அச்சிடப்பட்டது</string>
+    <string name="drm_label_copies_left">பிரதிகள் எஞ்சியுள்ளன</string>
+    <string name="drm_label_start">தொடங்கு</string>
+    <string name="drm_label_end">முடிவு</string>
+    <string name="drm_label_actions">செயல்கள்</string>
+    <string name="drm_label_renew">புதுப்பிக்கவும்</string>
+    <string name="drm_label_return">திரும்பு</string>
+    <string name="zero">00:00</string>
+    <string name="chapter_page">அத்தியாயம் / பக்கம்</string>
+    <string name="progression">முன்னேற்றம்</string>
+    <string name="timestamp">நேர முத்திரை</string>
+
+    <!-- Outlines -->
+    <string name="contents_tab_label">உள்ளடக்கம்</string>
+    <string name="bookmarks_tab_label">புக்மார்க்குகள்</string>
+    <string name="highlights_tab_label">சிறப்பம்சங்கள்</string>
+    <string name="pagelist_tab_label">பக்கப் பட்டியல்</string>
+    <string name="landmarks_tab_label">அடையாளங்கள்</string>
+    <string name="action_mode_menu_highlight">முன்னிலைப்படுத்தவும்</string>
+    <string name="action_mode_menu_underline">அடிக்கோடு</string>
+    <string name="action_mode_menu_note">குறிப்பு</string>
+    <string name="bookmark_added">புக்மார்க் சேர்க்கப்பட்டது</string>
+    <string name="bookmark_exists">புக்மார்க் ஏற்கனவே உள்ளது</string>
+
+    <string name="title_catalogs">பட்டியல்கள்</string>
+    <string name="title_bookshelf">புத்தகங்கள்</string>
+    <string name="title_about">பற்றி</string>
+    <string name="cover_image">அட்டைப் படம்</string>
+    <string name="repfr">பிரதிநிதி</string>
+
+    <string name="details">விவரங்கள்</string>
+    <string name="close">மூடு</string>
+    <string name="share">பகிரவும்</string>
+    <string name="delete">நீக்கு</string>
+    <string name="cancel">ரத்து செய்</string>
+    <string name="confirm_delete_book_title">புத்தகத்தை நீக்கவா?</string>
+    <string name="confirm_delete_book_text">இந்தப் புத்தகத்தை நீக்க விரும்புகிறீர்களா?</string>
+    <string name="confirm_delete_catalog_title">பட்டியலை நீக்கவா?</string>
+    <string name="confirm_delete_catalog_text">இந்த பட்டியல் ஊட்டத்தை நீக்க விரும்புகிறீர்களா?</string>
+
+    <string name="add_book">ஒரு புத்தகத்தைச் சேர்க்கவும்</string>
+    <string name="add_catalog">அட்டவணை ஊட்டத்தைச் சேர்க்கவும்</string>
+    <string name="ok">சரி</string>
+    <string name="save">சேமிக்கவும்</string>
+    <string name="enter_title">தலைப்பை உள்ளிடவும்</string>
+    <string name="enter_url">URL ஐ உள்ளிடவும்</string>
+    <string name="invalid_title">தலைப்பை உள்ளிடவும்</string>
+    <string name="invalid_url">சரியான URL ஐ உள்ளிடவும்</string>
+    <string name="catalog_parse_error">பட்டியல் ஊட்டத்தை பாகுபடுத்துவதில் பிழை. URL ஐச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்</string>
+
+    <string name="return_publication">இது வெளியீட்டைத் திருப்பித் தரும்</string>
+    <string name="return_button">திரும்பு</string>
+
+    <string name="opening_publication_cannot_render">வெளியீட்டை வழங்க முடியாது.</string>
+    <string name="opening_publication_audio_engine_initialization">ஆடியோ இன்ஜின் துவக்கம் தோல்வியடைந்ததால் வெளியீட்டைத் திறக்க முடியவில்லை.</string>
+
+    <string name="import_publication_unexpected_io_exception">உங்கள் சாதனத்தில் எதிர்பாராத பிழை காரணமாக வெளியீட்டைச் சேர்க்க முடியவில்லை</string>
+    <string name="import_publication_download_failed">வெளியீட்டைப் பதிவிறக்க முடியவில்லை.</string>
+    <string name="import_publication_no_acquisition">கையகப்படுத்தல் சாத்தியமில்லை.</string>
+
+    <string name="import_publication_success">உங்கள் நூலகத்தில் வெளியீடு சேர்க்கப்பட்டது</string>
+    <string name="import_publication_unable_add_pub_database">தரவுத்தளத்தில் வெளியீட்டைச் சேர்க்க முடியவில்லை</string>
+    <string name="import_publication_inconsistent_state">விதிவிலக்கான நிபந்தனைகள் காரணமாக இறக்குமதி தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.</string>
+
+    <string name="publication_error_unsupported_asset">சொத்து வடிவம் ஆதரிக்கப்படவில்லை</string>
+    <string name="publication_error_network_forbidden">சேவையகம் ஒரு ஆதாரத்திற்கான அணுகலை மறுத்தது.</string>
+    <string name="publication_error_network_not_found">சேவையகத்தில் ஆதாரம் கிடைக்கவில்லை.</string>
+    <string name="publication_error_network_unreachable">சேவையகத்தை அடைய முடியவில்லை.</string>
+    <string name="publication_error_network_timeout">சேவையகம் மிகவும் நீளமாக உள்ளது.</string>
+    <string name="publication_error_network_ssl_handshake">SSL பிழை ஏற்பட்டது.</string>
+    <string name="publication_error_network_unexpected">எதிர்பாராத நெட்வொர்க் பிழை ஏற்பட்டது.</string>
+    <string name="publication_error_filesystem_not_found">ஒரு கோப்பு கிடைக்கவில்லை.</string>
+    <string name="publication_error_filesystem_forbidden">கோப்பை அணுக உங்களுக்கு அனுமதி இல்லை.</string>
+    <string name="publication_error_filesystem_unexpected">எதிர்பாராத கோப்பு முறைமை பிழை ஏற்பட்டது.</string>
+    <string name="publication_error_filesystem_insufficient_space">சாதனத்தில் போதுமான இடம் இல்லை.</string>
+    <string name="publication_error_incorrect_credentials">வழங்கப்பட்ட சான்றுகள் தவறானவை</string>
+    <string name="publication_error_restricted">இந்த வெளியீட்டைத் திறக்க உங்களுக்கு அனுமதி இல்லை</string>
+    <string name="publication_error_out_of_memory">வெளியீட்டைத் திறக்க இந்தச் சாதனத்தில் போதுமான நினைவகம் இல்லை.</string>
+    <string name="publication_error_scheme_not_supported">வெளியீட்டு ஆதாரம் ஆதரிக்கப்படவில்லை.</string>
+    <string name="publication_error_invalid_publication">வெளியீடு சிதைந்ததாகத் தெரிகிறது.</string>
+    <string name="publication_error_unexpected">எதிர்பாராத பிழை ஏற்பட்டது.</string>
+
+    <!-- LcpError User Messages -->
+
+    <string name="lcp_error_license_interaction_not_available">இந்த தொடர்பு கிடைக்கவில்லை</string>
+    <string name="lcp_error_license_profile_not_supported">இந்த உரிமத்தில் சுயவிவர அடையாளங்காட்டி உள்ளது, இந்த ஆப்ஸைக் கையாள முடியாது, வெளியீட்டைச் செயல்படுத்த முடியாது</string>
+    <string name="lcp_error_crl_fetching">சான்றிதழ் திரும்பப்பெறுதல் பட்டியலை மீட்டெடுக்க முடியவில்லை</string>
+    <string name="lcp_error_network">நெட்வொர்க் பிழை</string>
+    <string name="lcp_error_runtime">எதிர்பாராத LCP பிழை</string>
+    <string name="lcp_error_unknown">அறியப்படாத LCP பிழை</string>
+
+    <string name="lcp_error_license_status.cancelled">இந்த உரிமம் %1$s அன்று ரத்து செய்யப்பட்டது</string>
+    <string name="lcp_error_license_status.returned">இந்த உரிமம் %1$s அன்று திருப்பி அனுப்பப்பட்டது.</string>
+    <string name="lcp_error_license_status.not_started">இந்த உரிமம் %1$s அன்று தொடங்குகிறது</string>
+    <string name="lcp_error_license_status.expired">இந்த உரிமம் %1$s அன்று காலாவதியானது</string>
+    <plurals name="lcp_error_license_status.revoked">
+        <item quantity="one">இந்த உரிமம் அதன் வழங்குநரால் %1$s அன்று ரத்து செய்யப்பட்டது. இது %2$d சாதனம் மூலம் பதிவு செய்யப்பட்டது.</item>
+        <item quantity="other">இந்த உரிமம் அதன் வழங்குநரால் %1$s அன்று ரத்து செய்யப்பட்டது. இது %2$d சாதனங்களால் பதிவு செய்யப்பட்டது.</item>
+    </plurals>
+
+    <string name="lcp_error_renew.renew_failed">உங்கள் வெளியீட்டை சரியாகப் புதுப்பிக்க முடியவில்லை</string>
+    <string name="lcp_error_renew.invalid_renewal_period">தவறான புதுப்பித்தல் காலம், உங்கள் வெளியீட்டை புதுப்பிக்க முடியவில்லை</string>
+    <string name="lcp_error_renew.unexpected_server_error">சர்வரில் எதிர்பாராத பிழை ஏற்பட்டது</string>
+
+    <string name="lcp_error_return.return_failed">உங்கள் வெளியீட்டை சரியாக திருப்பி அனுப்ப முடியவில்லை</string>
+    <string name="lcp_error_return.already_returned_or_expired">உங்கள் வெளியீடு ஏற்கனவே திருப்பி அனுப்பப்பட்டது அல்லது காலாவதியானது</string>
+    <string name="lcp_error_return.unexpected_server_error">சர்வரில் எதிர்பாராத பிழை ஏற்பட்டது</string>
+
+    <string name="lcp_error_parsing">JSON ஒரு செல்லுபடியாகும் ஆவணத்தைக் குறிக்கவில்லை.</string>
+    <string name="lcp_error_parsing.malformed_json">JSON தவறாக வடிவமைக்கப்பட்டுள்ளது மற்றும் பாகுபடுத்த முடியாது</string>
+    <string name="lcp_error_parsing.license_document">JSON சரியான உரிம ஆவணத்தைப் பிரதிநிதித்துவப்படுத்தவில்லை</string>
+    <string name="lcp_error_parsing.status_document">JSON சரியான நிலை ஆவணத்தைப் பிரதிநிதித்துவப்படுத்தவில்லை</string>
+
+    <string name="lcp_error_container.open_failed">உரிமக் கொள்கலனைத் திறக்க முடியவில்லை.</string>
+    <string name="lcp_error_container.file_not_found">கொள்கலனில் உரிமம் இல்லை</string>
+    <string name="lcp_error_container.read_failed">கொள்கலனில் இருந்து உரிமத்தைப் படிக்க முடியவில்லை</string>
+    <string name="lcp_error_container.write_failed">கொள்கலனில் உரிமம் எழுத முடியாது</string>
+
+    <string name="lcp_error_license_integrity.certificate_revoked">CRL இல் சான்றிதழ் திரும்பப் பெறப்பட்டது</string>
+    <string name="lcp_error_license_integrity.invalid_certificate_signature">சான்றிதழில் CA கையொப்பமிடவில்லை</string>
+    <string name="lcp_error_license_integrity.invalid_license_signature_date">காலாவதியான சான்றிதழின் மூலம் உரிமம் வழங்கப்பட்டுள்ளது</string>
+    <string name="lcp_error_license_integrity.invalid_license_signature">உரிம கையொப்பம் பொருந்தவில்லை</string>
+    <string name="lcp_error_license_integrity.invalid_user_key_check">பயனர் விசை சரிபார்ப்பு தவறானது</string>
+
+    <string name="lcp_error_decryption.content_key_decrypt_error">பயனர் விசையிலிருந்து மறைகுறியாக்கப்பட்ட உள்ளடக்க விசையை மறைகுறியாக்க முடியவில்லை</string>
+    <string name="lcp_error_decryption.content_decrypt_error">உள்ளடக்க விசையிலிருந்து மறைகுறியாக்கப்பட்ட உள்ளடக்கத்தை மறைகுறியாக்க முடியவில்லை</string>
+
+    <string name="missing_lcp_support">விண்ணப்பம் LCP ஆதரவு இல்லாமல் தொகுக்கப்பட்டது.</string>
+    <string name="reader_error">பிழை</string>
+    <string name="opening_error">வெளியீட்டைத் திறக்க முடியவில்லை</string>
+    <string name="import_error">இறக்குமதி பிழை</string>
+
+    <string name="failed_parsing_catalog">பட்டியலைப் பாகுபடுத்துவதில் தோல்வி</string>
+    <string name="no_result">முடிவு இல்லை</string>
+    <string name="note">குறிப்பு</string>
+    <string name="add_a_note">குறிப்பைச் சேர்</string>
+    <string name="add_an_annotation">சிறுகுறிப்பைச் சேர்க்கவும்</string>
+    <string name="delete_highlight_or_annotation">ஹைலைட் அல்லது சிறுகுறிப்பை நீக்கவும்</string>
+    <string name="yellow">மஞ்சள்</string>
+    <string name="green">பச்சை</string>
+    <string name="blue">நீலம்</string>
+    <string name="red">சிவப்பு</string>
+    <string name="purple">ஊதா</string>
+    <string name="seek_bar">சீக் பார்</string>
+    <string name="go_backward_30_seconds">30 வினாடிகள் பின்னோக்கி செல்லவும்</string>
+    <string name="play_or_pause">விளையாடவும் அல்லது இடைநிறுத்தவும்</string>
+    <string name="go_forward_30_seconds">30 வினாடிகள் முன்னோக்கி செல்லவும்</string>
+
+    <string name="tts_error_initialization">TTS இன்ஜினை துவக்குவதில் தோல்வி</string>
+    <string name="tts_error_language_support_incomplete">%s மொழிக்கு கூடுதல் தரவு தேவை. நீங்கள் அதைப் பதிவிறக்க விரும்புகிறீர்களா?</string>
+    <string name="tts_error_network">நெட்வொர்க்கிங் பிழை ஏற்பட்டது</string>
+    <string name="tts_error_other">ஒரு TTS பிழை ஏற்பட்டது.</string>
+    <string name="tts_next">முன்னோக்கிச் செல்லுங்கள்</string>
+    <string name="tts_pause">இடைநிறுத்தம்</string>
+    <string name="tts_play">விளையாடு</string>
+    <string name="tts_previous">பின்னோக்கிச் செல்லுங்கள்</string>
+    <string name="speed_rate">வேகம்</string>
+    <string name="pitch_rate">பிட்ச்</string>
+    <string name="tts_settings">பேச்சு அமைப்புகள்</string>
+    <string name="tts_stop">நிறுத்து</string>
+    <string name="tts_voice">குரல்</string>
+
+    <string name="search_error_not_searchable">இந்த வெளியீடு தேட முடியாதது</string>
+    <string name="search_error_cancelled">தேடல் ரத்து செய்யப்பட்டது.</string>
+    <string name="search_error_other">தேடும் போது பிழை ஏற்பட்டது</string>
+
+
+    <string name="error_unexpected">எதிர்பாராத பிழை ஏற்பட்டது.</string>
+</resources>
+
+
+

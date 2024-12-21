@@ -6,6 +6,8 @@
 
 package org.readium.r2.testapp
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -19,15 +21,26 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private val viewModel: MainViewModel by viewModels()
+    private val languageViewModel: LanguageViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+//        val languagePreference = LanguagePreference(this)
+//        setLocale(this, languagePreference.getLanguage())
+
+//        languageViewModel.language.observe(this) { languageCode ->
+//            LanguageManager.setLocale(this, languageCode)
+//            recreate() // Recreate activity to apply changes
+//        }
+
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.container)) { v, insets ->
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -71,4 +84,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+//    fun getLanguageViewModel(): LanguageViewModel = languageViewModel
 }
