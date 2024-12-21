@@ -12,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import org.readium.r2.shared.publication.Manifest
+import org.readium.r2.shared.publication.Metadata
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.util.AbsoluteUrl
 import org.readium.r2.shared.util.DebugError
@@ -38,57 +40,57 @@ class Bookshelf(
     private val coverStorage: CoverStorage,
     private val publicationOpener: PublicationOpener,
     private val assetRetriever: AssetRetriever,
-    private val publicationRetriever: PublicationRetriever,
+    private val publicationRetriever: PublicationRetriever
 ) {
     sealed class Event {
-        data object ImportPublicationSuccess :
-            Event()
+        data object ImportPublicationSuccess : Event()
 
         class ImportPublicationError(
-            val error: ImportError,
+            val error: ImportError
         ) : Event()
     }
 
-    val channel: Channel<Event> =
-        Channel(Channel.UNLIMITED)
+    val channel: Channel<Event> = Channel(Channel.UNLIMITED)
 
-    private val coroutineScope: CoroutineScope =
-        MainScope()
+    private val coroutineScope: CoroutineScope = MainScope()
 
     fun importPublicationFromStorage(
-        uri: Uri,
+        uri: Uri
     ) {
         coroutineScope.launch {
-            addBookFeedback(publicationRetriever.retrieveFromStorage(uri))
+//            addBookFeedback(publicationRetriever.retrieveFromStorage(uri))
+        }
+    }
+
+    fun importPublicationFromOpds(
+        publication: Publication
+    ) {
+        coroutineScope.launch {
+            addBookFeedback(
+                publicationRetriever.retrieveFromOpds(publication),
+                fileName = publication.metadata.title
+            )
+        }
+    }
+
+    fun addPublicationFromWeb(
+        url: AbsoluteUrl
+    ) {
+        coroutineScope.launch {
+            addBookFeedback(url)
         }
     }
 
     fun importPublicationFromHttp(
         url: AbsoluteUrl,
     ) {
-        coroutineScope.launch {
-            addBookFeedback(publicationRetriever.retrieveFromHttp(url))
-        }
-    }
-
-    fun importPublicationFromOpds(
-        publication: Publication,
-    ) {
-        coroutineScope.launch {
-            addBookFeedback(publicationRetriever.retrieveFromOpds(publication))
-        }
-    }
-
-    fun addPublicationFromWeb(
-        url: AbsoluteUrl,
-    ) {
-        coroutineScope.launch {
-            addBookFeedback(url)
-        }
+//        coroutineScope.launch {
+//            addBookFeedback(publicationRetriever.retrieveFromHttp(url))
+//        }
     }
 
     fun addPublicationFromStorage(
-        url: AbsoluteUrl,
+        url: AbsoluteUrl
     ) {
         coroutineScope.launch {
             addBookFeedback(url)
@@ -96,21 +98,19 @@ class Bookshelf(
     }
 
     private suspend fun addBookFeedback(
-        retrieverResult: Try<PublicationRetriever.Result, ImportError>,
+        retrieverResult: Try<PublicationRetriever.Result, ImportError>, fileName: String?,
     ) {
-        retrieverResult
-            .map { addBook(it.publication.toUrl(), it.format, it.coverUrl) }
-            .onSuccess { channel.send(Event.ImportPublicationSuccess) }
+        retrieverResult.map {
+
+                addBook(it.publication.toUrl(), it.format, it.coverUrl, fileName)
+            }.onSuccess { channel.send(Event.ImportPublicationSuccess) }
             .onFailure { channel.send(Event.ImportPublicationError(it)) }
     }
 
     private suspend fun addBookFeedback(
-        url: AbsoluteUrl,
-        format: Format? = null,
-        coverUrl: AbsoluteUrl? = null,
+        url: AbsoluteUrl, format: Format? = null, coverUrl: AbsoluteUrl? = null
     ) {
-        addBook(url, format, coverUrl)
-            .onSuccess { channel.send(Event.ImportPublicationSuccess) }
+        addBook(url, format, coverUrl).onSuccess { channel.send(Event.ImportPublicationSuccess) }
             .onFailure { channel.send(Event.ImportPublicationError(it)) }
     }
 
@@ -118,37 +118,36 @@ class Bookshelf(
         url: AbsoluteUrl,
         format: Format? = null,
         coverUrl: AbsoluteUrl? = null,
+        fileName: String? = null,
     ): Try<Unit, ImportError> {
-        val asset =
-            if (format == null) {
-                assetRetriever.retrieve(url)
-            } else {
-                assetRetriever.retrieve(url, format)
-            }.getOrElse {
-                return Try.failure(
-                    ImportError.Publication(PublicationError(it))
-                )
-            }
+        val asset = if (format == null) {
+            assetRetriever.retrieve(url)
+        } else {
+            assetRetriever.retrieve(url, format)
+        }.getOrElse {
+            return Try.failure(
+                ImportError.Publication(PublicationError(it))
+            )
+        }
 
         publicationOpener.open(
-            asset,
-            allowUserInteraction = false
+            asset, allowUserInteraction = false
         ).onSuccess { publication ->
-            val coverFile =
-                coverStorage.storeCover(publication, coverUrl)
-                    .getOrElse {
-                        return Try.failure(
-                            ImportError.FileSystem(
-                                FileSystemError.IO(it)
-                            )
+            val coverFile = coverStorage.storeCover(publication, coverUrl).getOrElse {
+                    return Try.failure(
+                        ImportError.FileSystem(
+                            FileSystemError.IO(it)
                         )
-                    }
+                    )
+                }
+
 
             val id = bookRepository.insertBook(
                 url,
                 asset.format.mediaType,
                 publication,
-                coverFile
+                coverFile,
+                fileName ?: publication.metadata.title ?: "",
             )
             if (id == -1L) {
                 coverFile.delete()
@@ -158,8 +157,7 @@ class Bookshelf(
                     )
                 )
             }
-        }
-            .onFailure {
+        }.onFailure {
                 Timber.e("Cannot open publication: $it.")
                 return Try.failure(
                     ImportError.Publication(PublicationError(it))
