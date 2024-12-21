@@ -82,10 +82,11 @@ class BookRepository(
         mediaType: MediaType,
         publication: Publication,
         cover: File,
+        fileName:String,
     ): Long {
         val book = Book(
             creation = DateTime().toDate().time,
-            title = publication.metadata.title ?: url.filename,
+            title = fileName,
             author = publication.metadata.authorName,
             href = url.toString(),
             identifier = publication.metadata.identifier ?: "",

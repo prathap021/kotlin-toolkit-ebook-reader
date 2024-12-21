@@ -51,27 +51,6 @@ class CatalogFeedListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//
-//        val oPDS2Catalog = Catalog(
-//            title = "OPDS 2.0 Test Catalog",
-//            href = "https://prathap021.github.io/TestApi/data.json",
-//            type = 2
-//        )
-
-//
-//        val oPDS2Catalog = Catalog(
-//            title = "OPDS 2.0 Test Catalog",
-//            href = "https://test.opds.io/2.0/home.json",
-//            type = 2
-//        )
-//        val oTBCatalog = Catalog(
-//            title = "Open Textbooks Catalog",
-//            href = "http://open.minitex.org/textbooks/",
-//            type = 1
-//        )
-
-//        catalogFeedListViewModel.insertCatalog(oPDS2Catalog)
-
         val preferences =
             requireContext().getSharedPreferences("org.readium.r2.testapp", Context.MODE_PRIVATE)
 
@@ -96,26 +75,26 @@ class CatalogFeedListFragment : Fragment() {
             }
         }
 
-//        val version = 2
-//        val VERSION_KEY = "OPDS_CATALOG_VERSION"
+        val version = 2
+        val VERSION_KEY = "OPDS_CATALOG_VERSION"
 
-//        if (preferences.getInt(VERSION_KEY, 0) < version) {
-//            preferences.edit().putInt(VERSION_KEY, version).apply()
-//
-//            val oPDS2Catalog = Catalog(
-//                title = "OPDS 2.0 Test Catalog",
-//                href = "https://test.opds.io/2.0/home.json",
-//                type = 2
-//            )
-//            val oTBCatalog = Catalog(
-//                title = "Open Textbooks Catalog",
-//                href = "http://open.minitex.org/textbooks/",
-//                type = 1
-//            )
-//
-//            catalogFeedListViewModel.insertCatalog(oPDS2Catalog)
-//            catalogFeedListViewModel.insertCatalog(oTBCatalog)
-//        }
+        if (preferences.getInt(VERSION_KEY, 0) < version) {
+            preferences.edit().putInt(VERSION_KEY, version).apply()
+
+            val oPDS2Catalog = Catalog(
+                title = "OPDS 2.0 Test Catalog",
+                href = "https://test.opds.io/2.0/home.json",
+                type = 2
+            )
+            val oTBCatalog = Catalog(
+                title = "Open Textbooks Catalog",
+                href = "http://open.minitex.org/textbooks/",
+                type = 1
+            )
+
+            catalogFeedListViewModel.insertCatalog(oPDS2Catalog)
+            catalogFeedListViewModel.insertCatalog(oTBCatalog)
+        }
 
         binding.catalogFeedAddCatalogFab.setOnClickListener {
             val alertDialog = MaterialAlertDialogBuilder(requireContext())
